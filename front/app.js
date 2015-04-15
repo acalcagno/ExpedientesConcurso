@@ -9,8 +9,8 @@ requirejs.config({
         app: '../app/js',
 		jquery: "./jquery.min",
         bootstrap: "./lib/bootstrap/js/bootstrap.min",
-        underscore: "./underscore-min"
-    
+        underscore: "./underscore-min",
+        alertify: "./alertify/alertify.min"    
     },
 	shim : {
         bootstrap: { "deps" :['jquery'] }
