@@ -8,7 +8,8 @@ requirejs.config({
     paths: {
         app: '../app/js',
 		jquery: "./jquery.min",
-        bootstrap: "./lib/bootstrap/js/bootstrap.min"  
+        bootstrap: "./lib/bootstrap/js/bootstrap.min",
+        //underscore: "./lib/underscore-min.js"
     
     },
 	shim : {
@@ -19,4 +20,4 @@ requirejs.config({
 
 // Start loading the main app file. Put all of
 // your application logic in there.
-requirejs(['app/main']);
+requirejs(['app/RecepcionYFoliado']);
