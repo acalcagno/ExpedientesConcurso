@@ -9,7 +9,7 @@ requirejs.config({
         app: '../app/js',
 		jquery: "./jquery.min",
         bootstrap: "./lib/bootstrap/js/bootstrap.min",
-        //underscore: "./lib/underscore-min.js"
+        underscore: "./underscore-min"
     
     },
 	shim : {
