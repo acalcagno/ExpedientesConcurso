@@ -49,12 +49,19 @@
 	position: absolute;
 	right: 0px;
 	top: 90px;
-	left: 285px;
+	left: 325px;
 	bottom: 0px;
 }
 
 .perfil {
 	cursor: pointer;
+	height: 70px;
+}
+
+.perfil .ponderacion_perfil{
+	position: absolute;
+	right: 10px;
+  	top: 10px;	
 }
 
 .perfil .nombre_perfil{
@@ -110,7 +117,7 @@
   	left: 16px;
   	top: 90px;
   	bottom: 0px;
-	width: 250px;
+	width: 300px;
 }
 
 #titulo_fojas {
