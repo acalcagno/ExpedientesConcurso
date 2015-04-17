@@ -3,7 +3,7 @@ var http = require('http');
 var express = require('express');
 var mongodb = require('mongodb');
 
-var uri = 'mongodb://localhost/ExpedientesConcurso';
+var uri = 'mongodb://127.0.0.1/ExpedientesConcurso';
 var app = express();
 
 mongodb.MongoClient.connect(uri, function(err, db) {  
