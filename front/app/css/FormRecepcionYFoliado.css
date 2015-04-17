@@ -85,6 +85,11 @@
 	border-left: 0px solid;
 	width: 100px;
 	padding: 5px;
+	background-color: rgb(255, 249, 187);
+}
+
+.documento.presentado #cantidad_fojas{
+	background-color: white !important;
 }
 
 #btn_guardar {

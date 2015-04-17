@@ -25,9 +25,19 @@ define(function (require) {
 							var control_documento = $("#plantillas .documento").clone();
 							control_documento.find("#nombre_documento").text(docu.nombre);
 							control_documento.find("#cantidad_fojas").val(docu.fojas);
+							if(docu.presentado) control_documento.addClass("presentado");
 							control_documento.find("#cantidad_fojas").change(function(){
 								docu.fojas = parseInt(control_documento.find("#cantidad_fojas").val());
-								if(docu.fojas>0) docu.presentado = true;
+								if(docu.fojas>0) {
+									docu.presentado = true
+									control_documento.addClass("presentado");
+								};
+								if(docu.fojas<=0||isNaN(docu.fojas)) {
+									docu.presentado = false;
+									control_documento.removeClass("presentado");	
+									docu.fojas = "";
+									control_documento.find("#cantidad_fojas").val("");
+								}
 							});
 							$("#contenedor_documentos").append(control_documento);
 						});
@@ -89,7 +99,7 @@ define(function (require) {
 								};
 								var doc_presentado = _.findWhere(p.documentosPresentados, {documento: docu});
 								if(doc_presentado){
-									doc_requerido.presentado = true;
+									doc_requerido.presentado = doc_presentado.cantidadFojas>0;
 									doc_requerido.fojas = doc_presentado.cantidadFojas;
 								}	
 								perfilPostulado.documentacionRequerida.push(doc_requerido);
