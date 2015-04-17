@@ -4,6 +4,7 @@
 	"dependencies": {
 		"express": "*",
 		"mongodb": "*",
-		"body-parser": "*"
+		"body-parser": "*",
+		"fast-csv": "*"
 	}
 }
