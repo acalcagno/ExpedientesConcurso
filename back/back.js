@@ -15,7 +15,14 @@ mongodb.MongoClient.connect(uri, function(err, db) {
 			response.send(JSON.stringify(perfiles));
 		});	
 	});
-	
+
+	app.get('/expediente', function(request, response){
+		var col_perfiles = db.collection('perfiles');
+		col_perfiles.find({}).toArray(function(err, perfiles){
+			response.send(JSON.stringify(perfiles));
+		});	
+	});
+
 	app.post('/guardarFojasParaUnPostulanteAUnPerfil', function(request, response){
 		var nombre_perfil = request.body.perfil;
 		var dni_postulante = request.body.dniPostulante;
