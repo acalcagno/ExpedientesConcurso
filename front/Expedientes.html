@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>Concurso - Creación de expedientes</title>
+
+		<!-- Bootstrap core CSS -->
+		<link href="./lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="./lib/alertify/css/alertify.min.css" rel="stylesheet">
+
+		<!-- Custom styles for this template -->
+		<link href="./app/css/FormExpedientes.css" rel="stylesheet">
+
+		<script data-main="app" src="lib/require.js"></script>
+  	</head>
+  	<body>
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+		  <div class="container">
+			<div class="navbar-header">
+			  <a class="navbar-brand">Concurso - Creación de expedientes</a>
+			</div>
+		  </div>
+		</nav>
+
+		<div id="contenedor_principal">
+			<div class="lista_expedientes">
+				<div id="titulo_expedientes">Expedientes</div>
+				<div id="contenedor_expedientes">
+					
+				</div>
+			</div>
+			<div id="panel_expediente">
+				<div id="titulo_expediente"> </div>
+				<div id="label_postulantes_incluidos">Postulantes incluidos en el expediente:</div>
+				<div id="contenedor_postulantes">
+				</div>
+			</div>
+				
+		</div><!-- /.container -->
+
+		<div id="plantillas">
+			<div class="expediente_en_lista">
+			  	<div id="numero_expediente" ></div>
+			</div>
+			<div class="postulantes_de_un_perfil">
+			  	<div class="nombre_perfil" ></div>
+				<div class="contenedor_postulantes">
+				
+				</div>
+			</div>
+			<div class="postulante_en_lista_de_incluidos">
+			  	<div class="nombre" ></div>
+				<button type="button" class="boton_quitar btn btn-default btn-sm">
+				  <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+				</button>
+			</div>
+			
+		</div>
+	</body>
+</html>

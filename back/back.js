@@ -2,6 +2,9 @@ var express = require('express');
 var http = require('http');
 var express = require('express');
 var mongodb = require('mongodb');
+var _ = require("./underscore-min");
+
+var ObjectId = mongodb.ObjectID;
 
 var uri = 'mongodb://127.0.0.1/ExpedientesConcurso';
 var app = express();
@@ -16,6 +19,48 @@ mongodb.MongoClient.connect(uri, function(err, db) {
 		});	
 	});
 	
+	app.get('/todosLosExpedientes', function(request, response){
+		var col_expedientes = db.collection('expedientes');
+		col_expedientes.find({}).toArray(function(err, expedientes){
+			response.send(JSON.stringify(expedientes));
+		});	
+	});
+	
+	app.get('/postulantesDelExpediente/:id', function(request, response){
+		var col_perfiles = db.collection('perfiles');
+		col_perfiles.find({}).toArray(function(err, perfiles){
+			var postulantes = [];
+			_.forEach(perfiles, function(perfil){
+				_.forEach(_.where(perfil.postulantes, {incluidoEnExpediente:request.params.id}), function(postulante){
+					postulantes.push({
+						nombre: postulante.nombre,
+						apellido: postulante.apellido,
+						dni: postulante.dni,
+						perfil: {
+							id: perfil._id,
+							nombre: perfil.nombre
+						}
+					});
+				});
+			});
+			response.send(JSON.stringify(postulantes));
+		});	
+	});
+	
+	app.post('/quitarPostulanteAPerfilDeExpediente', function(request, response){
+		var postulante = request.body.postulante;
+		
+		var col_perfiles = db.collection('perfiles');
+		col_perfiles.find({_id: new ObjectId(postulante.idPerfil)}).toArray(function(err, perfiles){
+			var perfil = perfiles[0];
+			_.findWhere(perfil.postulantes, {dni:postulante.dni}).incluidoEnExpediente = "";
+			col_perfiles.save(perfil, function(err){
+				if(err) throw err;
+				response.send("ok");	
+			});
+		});	
+	});
+
 	app.post('/guardarFojasParaUnPostulanteAUnPerfil', function(request, response){
 		var nombre_perfil = request.body.perfil;
 		var dni_postulante = request.body.dniPostulante;
@@ -45,6 +90,8 @@ mongodb.MongoClient.connect(uri, function(err, db) {
 		});
 	});
 });
+
+
 var allowCrossDomain = function(req, res, next) {
         res.header('Access-Control-Allow-Origin', "*");
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');

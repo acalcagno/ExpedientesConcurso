@@ -1,0 +1,105 @@
+
+#plantillas {
+	display: none;
+}
+#contenedor_principal {
+	position: absolute;
+	top: 50px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+}
+
+.lista_expedientes {
+	position: absolute;
+	left: 22px;
+	top: 10px;
+	bottom: 10px;
+	width: 250px;
+	background-color: rgb(242, 242, 242);
+}
+
+#panel_expediente {
+	position: absolute;
+	right: 0px;
+	left: 300px;
+	top: 10px;
+	bottom: 10px;
+	background-color: background-color: rgb(242, 242, 242);
+	background-color: rgb(242, 242, 242);
+	right: 20px;	
+}
+
+#titulo_expedientes {
+	font-weight: bold;
+	font-size: 20px;
+	padding: 10px;
+	color: rgb(144, 127, 127);
+}
+
+#contenedor_expedientes {
+	position: absolute;
+	top:50px;
+	bottom: 50px;
+	left: -15px;
+	right: 0px;
+}
+
+.expediente_en_lista, 
+.postulante_en_lista_de_incluidos{
+	height: 40px;
+	margin-bottom: 5px;
+	border-radius: 2px;
+	background-color: rgb(101, 216, 142);
+	padding: 9px;
+	font-weight: bold;
+	cursor: pointer;
+	color: white;
+}
+.expediente_en_lista.active,
+.expediente_en_lista.active:hover{
+	background-color: rgb(242, 241, 135);
+}
+
+.expediente_en_lista:hover,
+.postulante_en_lista_de_incluidos:hover{
+	background-color: rgb(111, 237, 156);
+}
+
+#titulo_expediente {
+	font-weight: bold;
+	font-size: 20px;
+	padding: 10px;
+	color: rgb(144, 127, 127);
+}
+
+#label_postulantes_incluidos {
+	margin-left: 11px;
+	margin-top: -10px;
+	color: rgb(144, 127, 127);
+}
+
+#contenedor_postulantes {
+	position: absolute;
+	top: 68px;
+	bottom: 50px;
+	left: -15px;
+	right: 0px;
+}
+
+.postulante_en_lista_de_incluidos {
+	position: relative;
+}
+
+.postulante_en_lista_de_incluidos .boton_quitar {
+  	position: absolute;
+  	right: 5px;
+  	top: 5px;
+}
+
+.postulantes_de_un_perfil .nombre_perfil {
+	margin-left: 26px;
+  	margin-bottom: 5px;
+  	color: rgb(144, 127, 127);
+  	font-weight: bold;
+}
