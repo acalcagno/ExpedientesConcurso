@@ -60,7 +60,33 @@ mongodb.MongoClient.connect(uri, function(err, db) {
 			});
 		});	
 	});
+	
+	app.post('/incluirPostulanteAPerfilEnExpediente', function(request, response){
+		var dni_postulante = request.body.dniPostulante;
+		var id_perfil = request.body.idPerfil;
+		var id_expediente= request.body.idExpediente;
+		
+		var col_perfiles = db.collection('perfiles');
+		col_perfiles.find({_id: new ObjectId(id_perfil)}).toArray(function(err, perfiles){
+			var perfil = perfiles[0];
+			_.findWhere(perfil.postulantes, {dni:dni_postulante}).incluidoEnExpediente = id_expediente;
+			col_perfiles.save(perfil, function(err){
+				if(err) throw err;
+				response.send("ok");	
+			});
+		});	
+	});
 
+	app.post('/crearExpediente', function(request, response){
+		var numero_expediente = request.body.numero;
+		
+		var col_expedientes = db.collection('expedientes');
+		col_expedientes.save({numero: numero_expediente}, function(){
+			if(err) throw err;
+			response.send("ok");
+		});
+	});
+	
 	app.post('/guardarFojasParaUnPostulanteAUnPerfil', function(request, response){
 		var nombre_perfil = request.body.perfil;
 		var dni_postulante = request.body.dniPostulante;

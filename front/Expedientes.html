@@ -29,16 +29,33 @@
 		</nav>
 
 		<div id="contenedor_principal">
-			<div class="lista_expedientes">
+			<div id="lista_expedientes">
 				<div id="titulo_expedientes">Expedientes</div>
 				<div id="contenedor_expedientes">
 					
+				</div>
+				<div id="panel_agregar_expediente">
+					<input id="numero_expediente_agregar" type="text" placeholder="numero de expediente"/>
+					<input id="boton_agregar_expediente" type="button" class="btn btn-default" value="Agregar"/>
+				</div>
+				<div id="boton_abrir_panel_agregar_expediente"> Agregar Expediente
+					<div id="boton_cerrar_panel_agregar_expediente" class="glyphicon glyphicon-remove" aria-hidden="true"></div>
 				</div>
 			</div>
 			<div id="panel_expediente">
 				<div id="titulo_expediente"> </div>
 				<div id="label_postulantes_incluidos">Postulantes incluidos en el expediente:</div>
+				<div id="boton_imprimir"> imprimir </div>
 				<div id="contenedor_postulantes">
+				</div>
+				<div id="panel_agregar_postulantes">
+					<select id="selector_de_perfiles"> 				
+					</select>
+					<div id="contenedor_postulantes_de_un_perfil">
+					</div>
+				</div>
+				<div id="boton_abrir_panel_agregar_postulantes"> Agregar Postulantes
+					<div id="boton_cerrar_panel_agregar_postulantes" class="glyphicon glyphicon-remove" aria-hidden="true"></div>
 				</div>
 			</div>
 				
@@ -51,7 +68,7 @@
 			<div class="postulantes_de_un_perfil">
 			  	<div class="nombre_perfil" ></div>
 				<div class="contenedor_postulantes">
-				
+					
 				</div>
 			</div>
 			<div class="postulante_en_lista_de_incluidos">
@@ -59,8 +76,14 @@
 				<button type="button" class="boton_quitar btn btn-default btn-sm">
 				  <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
 				</button>
-			</div>
-			
+			</div>		
+			<div class="postulante_en_lista_de_no_incluidos">
+			  	<div class="nombre" ></div>
+				<button type="button" class="boton_incluir_postulante btn btn-default btn-sm">
+				  	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				</button>
+				<span class="leyenda_ya_incluido"></span>
+			</div>	
 		</div>
 	</body>
 </html>
