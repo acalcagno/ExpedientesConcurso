@@ -40,6 +40,11 @@ define(function (require) {
 		});
 	});
 	
+	$("#boton_imprimir").click(function(){
+		var win = window.open(url + "imprimir/" + expediente_seleccionado._id, '_blank');
+  		win.focus();
+	});
+	
 	var cargar_panel_agregar_postulantes = function(){
 		$.ajax({
 			url: url + "todosLosPerfiles",
