@@ -63,10 +63,14 @@ define(function (require) {
 						$("#contenedor_postulantes_de_un_perfil").empty();
 						_.forEach(perfil.postulantes, function(postulante){
 							var control_postulante = $("#plantillas .postulante_en_lista_de_no_incluidos").clone();
-							control_postulante.find(".nombre").text(postulante.apellido + ", " + postulante.nombre);	
+							control_postulante.find(".nombre").text(postulante.apellido + ", " + postulante.nombre + " (" + postulante.dni +")");	
 							
 							if(postulante.incluidoEnExpediente){
 								control_postulante.find(".leyenda_ya_incluido").text("Postulante ya incluido en expediente N°" + _.findWhere(expedientes, {_id: postulante.incluidoEnExpediente}).numero);
+								control_postulante.addClass("incluido_en_expediente");	
+							} 
+							if(postulante_no_presento_documentacion(perfil, postulante)){
+								control_postulante.find(".leyenda_ya_incluido").text("No presentó toda la documentación requerida");
 								control_postulante.addClass("incluido_en_expediente");	
 							} 
 							$("#contenedor_postulantes_de_un_perfil").append(control_postulante);
@@ -103,6 +107,16 @@ define(function (require) {
 			   console.log("error al obtener expedientes");
 			}
 		});
+	};
+	
+	var postulante_no_presento_documentacion = function(perfil, postulante){
+		var no_presento = false;
+		_.forEach(perfil.documentacionRequerida, function(doc_requerido){
+			var doc_presentado = _.findWhere(postulante.documentosPresentados, {documento:doc_requerido});
+			if(!doc_presentado)	{no_presento = true; return;}
+			if(doc_presentado.cantidadFojas == "") no_presento = true;
+		});
+		return no_presento;
 	};
 	
 	var cargar_expedientes = function(){
@@ -158,7 +172,7 @@ define(function (require) {
 					control_perfil.show('fast');
 					_.forEach(_.filter(postulantes, function(p){return p.perfil.id == perfil.id}), function(postulante){
 						var control_postulante = $("#plantillas .postulante_en_lista_de_incluidos").clone();
-						control_postulante.find(".nombre").text(postulante.apellido + ", " + postulante.nombre);
+						control_postulante.find(".nombre").text(postulante.apellido + ", " + postulante.nombre + " (" + postulante.dni +")");
 						control_postulante.find(".boton_quitar").click(function(){
 							$.ajax({
 								url: url + "quitarPostulanteAPerfilDeExpediente",
