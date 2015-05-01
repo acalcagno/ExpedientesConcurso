@@ -1,4 +1,4 @@
-var url = "http://127.0.0.1:3000/";
+
 define(function (require) {
 	var _ = require('underscore');;
 	var $ = require('jquery');
@@ -6,6 +6,7 @@ define(function (require) {
 	var expediente_seleccionado;
 	var expedientes = [];
 	var perfil_seleccionado;
+	var url = "http://127.0.0.1:3000/";
 	
 	$(document).ready(function(){
 		cargar_expedientes();
@@ -105,7 +106,7 @@ define(function (require) {
 				$("#selector_de_perfiles").change();
 			},
 			error: function (XMLHttpRequest, textStatus, errorThrown) {
-			   console.log("error al obtener expedientes");
+			   alerify.error("error al obtener expedientes");
 			}
 		});
 	};
@@ -145,7 +146,7 @@ define(function (require) {
 				});
 			},
 			error: function (XMLHttpRequest, textStatus, errorThrown) {
-			   console.log("error al obtener expedientes");
+			   alertify.error("error al obtener expedientes");
 			}
 		});	
 	};
@@ -205,7 +206,7 @@ define(function (require) {
 				});
 			},
 			error: function (XMLHttpRequest, textStatus, errorThrown) {
-			   console.log("error al obtener expediente");
+			   alertify.error("error al obtener expediente");
 			}
 		});
 		

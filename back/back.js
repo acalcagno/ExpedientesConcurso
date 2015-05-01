@@ -6,10 +6,14 @@ var _ = require("./underscore-min");
 
 var ObjectId = mongodb.ObjectID;
 
-var uri = 'mongodb://127.0.0.1/ExpedientesConcurso';
+var uri_mongo = 'mongodb://127.0.0.1/ExpedientesConcurso';
 var app = express();
 
-mongodb.MongoClient.connect(uri, function(err, db) {  
+process.on('uncaughtException', function (err) {
+  	console.log('Tiró error: ', err.toString());
+});
+
+mongodb.MongoClient.connect(uri_mongo, function(err, db) {  
   	if(err) throw err;
 	
 	app.get('/todosLosPerfiles', function(request, response){
@@ -23,6 +27,46 @@ mongodb.MongoClient.connect(uri, function(err, db) {
 		var col_expedientes = db.collection('expedientes');
 		col_expedientes.find({}).toArray(function(err, expedientes){
 			response.send(JSON.stringify(expedientes));
+		});	
+	});
+	
+	app.get('/getPostulantePorDni/:dni', function(request, response){
+		var dni = request.params.dni.toString();
+		
+		db.collection('checklists').find({"postulantes.dni": dni}).toArray(function(err, checklists){			
+			var postulante = {encontrado: (checklists.length>0)};
+			var p = _.findWhere(checklists[0].postulantes, {dni: dni});
+			postulante.dni = p.dni;
+			postulante.nombre = p.nombre;
+			postulante.apellido = p.apellido;
+			postulante.perfiles = _.map(checklists, function(chk){
+				return {
+					nombre: chk.nombrePerfil,
+					idChecklist: chk._id
+				}
+			});		
+			
+			response.send(JSON.stringify(postulante));
+		});	
+	});
+	
+	app.post('/getDocumentacionChecklistPostulante', function(request, response){
+		var dni = request.body.dni.toString();
+		var idChecklist = request.body.idChecklist;
+		
+		db.collection('checklists').findOne({_id: new ObjectId(idChecklist)}, function(err, checklist){			
+			documentacion = _.map(checklist.documentacionRequerida, function(doc_req){
+				var p = _.findWhere(checklist.postulantes, {dni: dni});
+				var doc_pres = _.findWhere(p.documentacionPresentada , {descripcion: doc_req});
+				if(!doc_pres) doc_pres = {cantidadFojas : ""};
+				return {
+					descripcion: doc_req, 
+					cantidadFojas: doc_pres.cantidadFojas,
+					presentado: doc_pres.cantidadFojas != ""
+				};
+			});
+
+			response.send(JSON.stringify(documentacion));
 		});	
 	});
 	
@@ -80,36 +124,27 @@ mongodb.MongoClient.connect(uri, function(err, db) {
 	app.post('/crearExpediente', function(request, response){
 		var numero_expediente = request.body.numero;
 		
-		var col_expedientes = db.collection('expedientes');
-		col_expedientes.save({numero: numero_expediente}, function(){
+		db.collection('expedientes').save({numero: numero_expediente}, function(){
 			if(err) throw err;
 			response.send("ok");
 		});
 	});
 	
 	app.post('/guardarFojasParaUnPostulanteAUnPerfil', function(request, response){
-		var nombre_perfil = request.body.perfil;
+		var id_checklist = request.body.idChecklist;
 		var dni_postulante = request.body.dniPostulante;
-		var documentacion_requerida = request.body.documentos;
-		var col_perfiles = db.collection('perfiles');
-		col_perfiles.find({
-			nombre:nombre_perfil				
-		}).toArray(function(err, perfiles){
-			if(err) throw err;
-			var perfil = perfiles[0];
-			var postulante_a_perfil;
-			perfil.postulantes.forEach(function(p){
-				if(p.dni == dni_postulante) postulante_a_perfil = p;
+		var documentacion_requerida = request.body.documentacion;
+		
+		db.collection('checklists').findOne({_id: new ObjectId(id_checklist)}, function(err, checklist){		
+			var postulante_a_perfil = _.findWhere(checklist.postulantes, {dni: dni_postulante});
+			postulante_a_perfil.documentacionPresentada = _.map(documentacion_requerida, function(docu){
+				return {
+					descripcion: docu.descripcion,
+					cantidadFojas: docu.cantidadFojas
+				};
 			});
-			postulante_a_perfil.documentosPresentados = [];
 			
-			documentacion_requerida.forEach(function(docu){
-				postulante_a_perfil.documentosPresentados.push({
-					documento: docu.nombre,
-					cantidadFojas: docu.fojas
-				});
-			});
-			col_perfiles.save(perfil, function(err){
+			db.collection('checklists').save(checklist, function(err){
 				if(err) throw err;
 				response.send("ok");	
 			});

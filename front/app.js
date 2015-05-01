@@ -21,4 +21,4 @@ requirejs.config({
 // Start loading the main app file. Put all of
 // your application logic in there.
 requirejs(['app/RecepcionYFoliado']);
-requirejs(['app/Expedientes']);
+//requirejs(['app/Expedientes']);

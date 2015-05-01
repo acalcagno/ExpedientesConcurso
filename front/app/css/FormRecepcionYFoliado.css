@@ -1,3 +1,11 @@
+#contenedor_resultado_busqueda {
+	position: absolute; 
+	display: none;
+	top: 55px;
+  	bottom: 5px;
+	left: 5px;
+	right: 5px;
+}
 
 .documento {
 	height: 40px;
@@ -11,15 +19,11 @@
 	display: none;
 }
 
-#documentos {
-	
-}
-
 .datos_postulante {
 	padding: 10px 0px 10px 0px;
 	height: 55px;
 	position: absolute;
-	top: 50px;
+	top: 5px;
 	left: 16px;
 	right: 0px;
 }
@@ -36,49 +40,84 @@
   	margin-left: 15px;
 }
 
-#contenedor_perfiles {
-	
-}
-
-#titulo_perfiles {
-	font-size: 19px;
-  	margin-top: 23px;
+#perfiles_concursados {
+  	position: absolute;
+	left: 22px;
+	top: 60px;
+	bottom: 10px;
+	width: 250px;
+	background-color: rgb(231, 223, 223);
 }
 
 #panel_perfil {
-	position: absolute;
-	right: 0px;
-	top: 90px;
-	left: 325px;
-	bottom: 0px;
-}
-
-.perfil {
-	cursor: pointer;
-	height: 70px;
-}
-
-.perfil .ponderacion_perfil{
-	position: absolute;
+  	position: absolute;
 	right: 10px;
-  	top: 10px;	
+	top: 60px;
+	left: 325px;
+	bottom: 10px;
+	background-color: rgb(231, 223, 223);
 }
 
-.perfil .nombre_perfil{
-	cursor: pointer;
-}
-.documento #nombre_documento {
-	display: inline-block;
+#contenedor_perfiles, 
+#contenedor_documentos{
 	position: absolute;
-	top: 0px;
-	left: 0px;
-	bottom: 0px;
+	top: 50px;
+	bottom: 5px;
+	left: -15px;
 	right: 0px;
-	background-color: rgb(228, 223, 223);
-	border-radius: 5px 5px 5px 5px;
-	/* vertical-align: middle; */
+	overflow: auto;
+	-moz-transition: bottom 0.5s;
+  	-webkit-transition: bottom 0.5s;
+  	-o-transition: bottom 0.5s;
+  	transition: bottom 0.5s;
+}
+
+#contenedor_documentos{
+	bottom: 45px;
+}
+
+#titulo_perfiles,
+#titulo_documentos
+{
+	font-weight: bold;
+	font-size: 20px;
+	padding: 10px;
+	color: rgb(144, 127, 127);
+}
+
+.perfil,
+.documento{
+	height: 60px;
+	margin-bottom: 5px;
+	border-radius: 2px;
+	background-color: rgb(101, 216, 142);
 	padding: 9px;
-  	font-size: 17px;
+	font-weight: bold;
+	cursor: pointer;
+	color: white;
+	position: relative;
+}
+
+.documento{
+	height: 40px;
+}
+
+.perfil.active{
+	background-color: rgb(242, 241, 135);
+}
+
+.perfil:hover,
+.documento:hover{
+	background-color: rgb(111, 237, 156);
+}
+
+.perfil .nombre_perfil,
+.documento #nombre_documento{
+	margin-left: 26px;
+  	margin-bottom: 5px;
+  	color: rgb(144, 127, 127);
+  	font-weight: bold;
+	cursor: pointer;
 }
 
 .documento #cantidad_fojas {
@@ -87,12 +126,11 @@
 	right: 0px;
 	top: 0px;
 	bottom: 0px;
-	border-radius: 0px 5px 5px 0px;
 	border: 0px solid;
-	border-left: 0px solid;
 	width: 100px;
 	padding: 5px;
 	background-color: rgb(255, 249, 187);
+	color: black;
 }
 
 .documento.presentado #cantidad_fojas{
@@ -100,24 +138,9 @@
 }
 
 #btn_guardar {
-	float:right;
-	margin-top: 5px;
-}
-
-#titulo_documentos {
-	font-size: 19px;
-	margin-top: 22px;
-	display: inline-block;
-	margin-bottom: 2px;
-}
-
-#perfiles_concursados {
-  	display: inline-block;
   	position: absolute;
-  	left: 16px;
-  	top: 90px;
-  	bottom: 0px;
-	width: 300px;
+  	right: 5px;
+  	bottom: 5px;
 }
 
 #titulo_fojas {
@@ -126,13 +149,38 @@
   	top: 25px;
   	right: 37px;
   	font-size: 18px;
+	font-weight: bold;
+	color: rgb(144, 127, 127);
 }
 
-#contenedor_resultado_busqueda {
-	position: relative; 
-	display: none;
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    overflow: visible;
 }
-
-#panel_agregar_expediente {
-	
+ 
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, .2);
+    min-height: 25px;
+    box-shadow: inset 1px 1px 0 rgba(0, 0, 0, .1),inset 0 -1px 0 rgba(0, 0, 0, .07);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, .3);
+}
+ 
+::-webkit-scrollbar-track {
+    background-color: #dddddd;
+    border: solid transparent;
+}
+::-webkit-scrollbar-track:hover {
+    background-color: #cccccc;
+}
+ 
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+::-webkit-scrollbar-button {
+    height: 0px;
+    width: 0px;
 }
