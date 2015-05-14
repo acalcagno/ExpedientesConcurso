@@ -1,8 +1,4 @@
-define(function (require) {
-	var _ = require('underscore');;
-	var $ = require('jquery');
-	var alertify = require('alertify');
-	
+$(document).ready(function(){
 	var url = "http://127.0.0.1:3000/";
 	
 	$("#btn_buscar").click(function(){

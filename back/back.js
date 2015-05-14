@@ -1,6 +1,5 @@
 var express = require('express');
 var http = require('http');
-var express = require('express');
 var mongodb = require('mongodb');
 var _ = require("./underscore-min");
 

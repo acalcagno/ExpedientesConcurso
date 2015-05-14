@@ -1,72 +1,147 @@
+var fs = require("fs");
+var csv = require("fast-csv");
+var _ = require("./underscore-min");
 var mongodb = require('mongodb');
 
-var uri = 'mongodb://localhost/ExpedientesConcurso';
+var uri = 'mongodb://127.0.0.1/ExpedientesConcurso';
 
+//process.on('uncaughtException', function (err) {
+//  	console.log('Tiró error: ', err.toString());
+//});
 
-mongodb.MongoClient.connect(uri, function(err, db) { 
-    if(err) throw err;
-    
-    function insertPerfil(db, perfil) {
-        if (perfil.nombre != "NINGUNO") {
-            db.collection('perfiles').insert(perfil);
-        }
-    }
-
-    var fs = require('fs');
-    var lineList = fs.readFileSync('concursantes_ejemplo.csv').toString().split('\n');
-    lineList.shift(); // Shift the headings off the list of records.
-
-    var schemaKeyList = ['dni', 'apellido', 'nombre', 'perfil' ,'ponderacion'];
-
-    function postulanteFrom(row) {
-        var postulante = {}
-        postulante.apellido = row[1];
-        postulante.nombre = row[2];
-        postulante.dni = row[0];
-        postulante.ponderacion = row[4];
-        return postulante;
-    }
-
-
-    var nombre_perfil_row_anterior = "NINGUNO";
-    var postulantes_del_perfil = [];
-    var perfil = {};
-    perfil.postulantes = [];
-
-    function createDocRecurse (err) {
-        if (err) {
-            console.log(err);
-            process.exit(1);
-        }
-        if (lineList.length) {
-            var line = lineList.shift();
-            var row = line.split(',')
-
-            nombre_perfil_row = row[3];
-            if (nombre_perfil_row_anterior == nombre_perfil_row) {
-                perfil.postulantes.push(postulanteFrom(row));
-            } else {
-                perfil.nombre = nombre_perfil_row_anterior;
-
-                insertPerfil(db, perfil);
-
-                perfil = {};
-                nombre_perfil_row_anterior = nombre_perfil_row;
-                perfil.postulantes = [];
-                postulante_a_agregar = postulanteFrom(row);
-                perfil.postulantes.push(postulante_a_agregar);
-            }
-            createDocRecurse();
-        } else {
-            perfil.nombre = nombre_perfil_row_anterior;
-            insertPerfil(db, perfil);
-
-        }
-    }
-
-    createDocRecurse(null);
-    console.log("Datos importados correctamente");
-    process.exit(0);
-    
+mongodb.MongoClient.connect(uri, function(err, db) {  
+  	if(err) throw err;
+	var stream_perfiles = fs.createReadStream("perfiles.csv", {encoding: "utf8"});
+	csv.fromStream(stream_perfiles, {headers : true})
+		.on("data", function(data){     
+			db.collection('perfiles').update({codigo: data.Perfil}, {
+				codigo: data.Perfil ,
+				descripcion: data.DescrPerfil,
+				nivel: data.Nivel,
+				agrupamiento: data.Agrupamiento,
+				convocatoria: data.Convocatoria,
+				comite: data.Comite,
+				vacantes: data.Vacantes					
+			}, {
+				upsert: true
+			}, function(err){
+				if(err) console.log("error al importar perfil", err);
+			});			
+		})
+		.on("end", function(){
+			console.log(JSON.stringify("termino de cargar perfiles"));
+		});	
+	
+	var stream_documentos = fs.createReadStream("documentos.csv", {encoding: "utf8"});
+	csv
+		.fromStream(stream_documentos, {headers : true})
+		.on("data", function(data){     
+			db.collection('documentos').update({codigo: data.Codigo}, {
+				codigo: data.Codigo ,
+				descripcion: data.Documento
+			}, {
+				upsert: true
+			}, function(err){
+				if(err) console.log("error al importar documento", err);
+			});			
+		})
+		.on("end", function(){
+			console.log(JSON.stringify("termino de cargar documentos"));
+		});	
+	
+	var stream_checklist_cabecera = fs.createReadStream("checklist_cabecera.csv", {encoding: "utf8"});
+	csv
+		.fromStream(stream_checklist_cabecera, {headers : true})
+		.on("data", function(data){     
+			db.collection('checklists').update({codigo: data.Codigo}, {
+				$set: {
+					codigo: data.Codigo ,
+					checklist: data.Checklist
+				}
+			}, {
+				upsert: true
+			}, function(err){
+				if(err) console.log("error al importar checklist_cabecera", err);
+			});			
+		})
+		.on("end", function(){
+			console.log(JSON.stringify("termino de cargar checklist_cabecera"));
+			//cuando estan todos los checklists cargados, cargo la documentacion requerida
+			var col_checklists = db.collection('checklists');
+			col_checklists.find({}).toArray(function(err, checklists){
+				_.forEach(checklists, function(ch){
+					ch.documentacionRequerida = [];
+				})
+				var stream_checklist_detalle = fs.createReadStream("checklist_detalle.csv", {encoding: "utf8"});
+				csv
+					.fromStream(stream_checklist_detalle, {headers : true})
+					.on("data", function(data){     
+						var checklist = _.findWhere(checklists, {codigo: data.Checklist});
+						checklist.documentacionRequerida.push({
+							documento: data.Documento,
+							orden: data.Orden
+						});	
+					})
+					.on("end", function(){
+						_.forEach(checklists, function(ch){
+							col_checklists.save(ch, function(){});
+						})
+						console.log(JSON.stringify("termino de cargar checklist_detalle"));
+					});	
+			});			
+		});	
+	
+	
+	var stream_inscriptos = fs.createReadStream("inscriptos.csv", {encoding: "utf8"});
+	csv
+		.fromStream(stream_inscriptos, {headers : true})
+		.on("data", function(data){     
+			db.collection('postulantes').update({dni: data.Nro_Doc}, {
+				$set: {
+					dni: data.Nro_Doc ,
+					apellido: data.Apellido,
+					nombre: data.Nombre,
+					mail: data.Mail
+				}
+			}, {
+				upsert: true
+			}, function(err){
+				if(err) console.log("error al importar checklist_cabecera", err);
+			});			
+		})
+		.on("end", function(){
+			console.log(JSON.stringify("termino de cargar postulantes"));
+			//cuando estan todos los postulantes cargados, cargo las postulaciones
+			var col_postulantes = db.collection('postulantes');
+			col_postulantes.find({}).toArray(function(err, postulantes){
+				_.forEach(postulantes, function(p){
+					if(!p.postulaciones) p.postulaciones = [];
+				})
+				var stream_postulaciones = fs.createReadStream("postulaciones.csv", {encoding: "utf8"});
+				csv
+					.fromStream(stream_postulaciones, {headers : true})
+					.on("data", function(data){     
+						var postulante = _.findWhere(postulantes, {dni: data.DNI});
+						var postulacion = _.findWhere(postulante.postulaciones, {codigoPerfil: data.Cod_Perfil});
+						if(!postulacion) {
+							postulacion = {
+								codigoPerfil: data.Cod_Perfil,
+								documentacionPresentada: []
+							};
+							postulante.postulaciones.push(postulacion);	
+						}
+						postulacion.codigoChecklist = data.Cod_Checklist;						
+					})
+					.on("end", function(){
+						_.forEach(postulantes, function(p){
+							col_postulantes.save(p, function(){});
+						})
+						console.log(JSON.stringify("termino de cargar postulaciones"));
+					});	
+			});			
+		});	
+	
 });
-    
+
+
+

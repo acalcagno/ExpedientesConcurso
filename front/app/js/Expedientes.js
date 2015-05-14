@@ -1,17 +1,8 @@
-
-define(function (require) {
-	var _ = require('underscore');;
-	var $ = require('jquery');
-	var alertify = require('alertify');
+$(document).ready(function(){
 	var expediente_seleccionado;
 	var expedientes = [];
 	var perfil_seleccionado;
 	var url = "http://127.0.0.1:3000/";
-	
-	$(document).ready(function(){
-		cargar_expedientes();
-		cargar_panel_agregar_postulantes();
-	});
 	
 	$("#boton_abrir_panel_agregar_expediente").click(function(){
 		$("#panel_agregar_expediente").show("fast");
@@ -220,5 +211,9 @@ define(function (require) {
 			$("#panel_expediente").removeClass("modo_agregar_postulantes");
 			event.stopPropagation();
 		});
+		
+		cargar_expedientes();
+		cargar_panel_agregar_postulantes();
+	
 	}
 });
