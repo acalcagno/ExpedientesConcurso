@@ -4,92 +4,137 @@ $(document).ready(function(){
 	$("#btn_buscar").click(function(){
 		$("#panel_perfil").hide();
 		$("#contenedor_resultado_busqueda").hide();
-		buscarPostulante($("#txtBuscador").val(), function(postulante){
-			if(postulante.encontrado){
+		getPostulantePorDNI($("#txtBuscador").val(), function(postulante){
+			if(postulante.dni){
 				$("#contenedor_resultado_busqueda").show();
 				$("#nombre_postulante").text(postulante.apellido + ", " + postulante.nombre);
 				$("#dni_postulante").text("DNI:"+postulante.dni);
 				$("#contenedor_perfiles").empty();
-				_.forEach(postulante.perfiles, function(perfil){
+				_.forEach(postulante.postulaciones, function(postulacion){					
 					var control_perfil = $("#plantillas .perfil").clone();
-					control_perfil.find(".nombre_perfil").text(perfil.nombre);
-					control_perfil.click(function(){
-						$("#contenedor_perfiles").find(".active").removeClass("active");
-						control_perfil.addClass("active");
-						$("#panel_perfil").show();
-						$.ajax({
-							url: url + "getDocumentacionChecklistPostulante",
-							type: "POST",
-							data: {
-								dni: postulante.dni,
-								idChecklist: perfil.idChecklist
-							},
-							success: function (respuestaJson) {
+					if(!postulacion.documentacionPresentada) postulacion.documentacionPresentada = [];
+					getPerfilPorCodigo(postulacion.codigoPerfil, function(perfil){
+						control_perfil.find(".nombre_perfil").text(perfil.descripcion);						
+						control_perfil.click(function(){
+							$("#contenedor_perfiles").find(".active").removeClass("active");
+							control_perfil.addClass("active");
+							$("#panel_perfil").show();
+
+							getChecklistPorCodigo(postulacion.codigoChecklist, function(checklist){
 								$("#contenedor_documentos").empty();
-								perfil.documentacion = JSON.parse(respuestaJson);	
-								_.forEach(perfil.documentacion, function(docu){
+								_.forEach(_.sortBy(checklist.documentacionRequerida, "orden"), function(documento_requerido){
 									var control_documento = $("#plantillas .documento").clone();
-									control_documento.find("#nombre_documento").text(docu.descripcion);
-									control_documento.find("#cantidad_fojas").val(docu.cantidadFojas);
-									if(docu.presentado) control_documento.addClass("presentado");
-									control_documento.find("#cantidad_fojas").change(function(){
-										docu.cantidadFojas = parseInt(control_documento.find("#cantidad_fojas").val());
-										if(docu.cantidadFojas>0) {
-											docu.presentado = true
-											control_documento.addClass("presentado");
-										};
-										if(docu.cantidadFojas<=0||isNaN(docu.cantidadFojas)) {
-											docu.presentado = false;
-											control_documento.removeClass("presentado");	
-											docu.cantidadFojas = "";
-											control_documento.find("#cantidad_fojas").val("");
+
+									getDocumentoPorCodigo(documento_requerido.codigo, function(documento){														
+										var documento_presentado = _.findWhere(postulacion.documentacionPresentada, {codigo: documento.codigo});
+										control_documento.find("#nombre_documento").text(documento.descripcion);
+										if(documento_presentado) {
+											control_documento.find("#cantidad_fojas").val(documento_presentado.cantidadFojas);
+											if(documento_presentado.cantidadFojas>0) control_documento.addClass("presentado");
 										}
-									});
-									$("#contenedor_documentos").append(control_documento);
+										control_documento.find("#cantidad_fojas").change(function(){
+											if(!documento_presentado) {
+												documento_presentado = {
+													codigo: documento.codigo
+												};
+												postulacion.documentacionPresentada.push(documento_presentado);
+											}
+											documento_presentado.cantidadFojas = parseInt(control_documento.find("#cantidad_fojas").val());
+											if(documento_presentado.cantidadFojas>0) {
+												control_documento.addClass("presentado");
+											};
+											if(documento_presentado.cantidadFojas==0||isNaN(documento_presentado.cantidadFojas)) {
+												control_documento.removeClass("presentado");	
+												documento_presentado.cantidadFojas = "";
+												control_documento.find("#cantidad_fojas").val("");
+											}
+										});
+										$("#contenedor_documentos").append(control_documento);
+									});			
 								});		
-							},
-							error: function (XMLHttpRequest, textStatus, errorThrown) {
-								alertify.error("Error al obtener documentos");
-							}
-						});
-						
-						$("#btn_guardar").off();
-						$("#btn_guardar").click(function(){
-							$.ajax({
-								url: url + "guardarFojasParaUnPostulanteAUnPerfil",
-								type: "POST",
-								data: {
-									dniPostulante: postulante.dni,
-									idChecklist: perfil.idChecklist,
-									documentacion: perfil.documentacion
-								},
-								success: function (respuestaJson) {
-									alertify.success("Fojas guardadas con éxito");			
-								},
-								error: function (XMLHttpRequest, textStatus, errorThrown) {
-									alertify.error("Error al guardar");
-								}
+							});
+
+							$("#btn_guardar").off();
+							$("#btn_guardar").click(function(){
+								$.ajax({
+									url: url + "guardarPostulante",
+									type: "POST",
+									data: {
+										postulante: postulante
+									},
+									success: function (respuestaJson) {
+										alertify.success("Fojas guardadas con éxito");			
+									},
+									error: function (XMLHttpRequest, textStatus, errorThrown) {
+										alertify.error("Error al guardar");
+									}
+								});
 							});
 						});
+						$("#contenedor_perfiles").append(control_perfil);	
+
 					});
-					$("#contenedor_perfiles").append(control_perfil);
 				});
 			}
 		});
 	});
        
-	function buscarPostulante(documentoBuscado, callback) {	
+	function getPostulantePorDNI(dni, callback) {	
 		$.ajax({
-			url: url + "getPostulantePorDni/" + documentoBuscado,
+			url: url + "getPostulantePorDni/" + dni,
 			type: "GET",
 			async: true,
 			success: function (respuestaJson) {
-				console.log(respuestaJson);
 				var postulante = JSON.parse(respuestaJson);	
 				callback(postulante);
 			},
 			error: function (XMLHttpRequest, textStatus, errorThrown) {
-			   alertify.error("error al obtener perfiles");
+			   alertify.error("error al obtener postulante");
+			}
+		});
+	};
+	
+	function getChecklistPorCodigo(codigo, callback) {	
+		$.ajax({
+			url: url + "getChecklistPorCodigo/" + codigo,
+			type: "GET",
+			async: true,
+			success: function (respuestaJson) {
+				var checklist = JSON.parse(respuestaJson);	
+				callback(checklist);
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown) {
+			   alertify.error("error al obtener checklist");
+			}
+		});
+	};
+	
+	function getPerfilPorCodigo(codigo, callback) {	
+		$.ajax({
+			url: url + "getPerfilPorCodigo/" + codigo,
+			type: "GET",
+			async: true,
+			success: function (respuestaJson) {
+				var perfil = JSON.parse(respuestaJson);	
+				callback(perfil);
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown) {
+			   alertify.error("error al obtener perfil");
+			}
+		});
+	};
+	
+	function getDocumentoPorCodigo(codigo, callback) {	
+		$.ajax({
+			url: url + "getDocumentoPorCodigo/" + codigo,
+			type: "GET",
+			async: true,
+			success: function (respuestaJson) {
+				var documento = JSON.parse(respuestaJson);	
+				callback(documento);
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown) {
+			   alertify.error("error al obtener documento");
 			}
 		});
 	};

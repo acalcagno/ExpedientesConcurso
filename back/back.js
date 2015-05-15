@@ -1,3 +1,4 @@
+
 var express = require('express');
 var http = require('http');
 var mongodb = require('mongodb');
@@ -15,6 +16,73 @@ process.on('uncaughtException', function (err) {
 mongodb.MongoClient.connect(uri_mongo, function(err, db) {  
   	if(err) throw err;
 	
+	app.get('/getPostulantePorDni/:dni', function(request, response){
+		var dni = request.params.dni.toString();
+		
+		db.collection('postulantes').findOne({"dni": dni}, function(err, postulante){		
+			if(postulante == null) {
+				response.send(JSON.stringify({encontrado:false}));
+				return;
+			}			
+			response.send(JSON.stringify(postulante));
+		});	
+	});	
+	
+	
+	app.get('/getPerfilPorCodigo/:codigo', function(request, response){
+		var codigo = request.params.codigo;
+		
+		db.collection('perfiles').findOne({"codigo": codigo}, function(err, perfil){		
+			if(perfil == null) {
+				response.send(JSON.stringify({encontrado:false}));
+				return;
+			}			
+			response.send(JSON.stringify(perfil));
+		});	
+	});	
+	
+	app.get('/getChecklistPorCodigo/:codigo', function(request, response){
+		var codigo = request.params.codigo;
+		
+		db.collection('checklists').findOne({"codigo": codigo}, function(err, checklist){		
+			if(checklist == null) {
+				response.send(JSON.stringify({encontrado:false}));
+				return;
+			}			
+			response.send(JSON.stringify(checklist));
+		});	
+	});	
+	
+	
+	app.get('/getDocumentoPorCodigo/:codigo', function(request, response){
+		var codigo = request.params.codigo;
+		
+		db.collection('documentos').findOne({"codigo": codigo}, function(err, documento){		
+			if(documento == null) {
+				response.send(JSON.stringify({encontrado:false}));
+				return;
+			}			
+			response.send(JSON.stringify(documento));
+		});	
+	});	
+	
+	app.post('/guardarPostulante', function(request, response){
+		var postulante = request.body.postulante;
+		delete postulante._id;
+		db.collection('postulantes').update({dni:postulante.dni}, postulante, function(err){
+			if(err) throw err;
+			response.send("ok");	
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	app.get('/todosLosPerfiles', function(request, response){
 		var col_perfiles = db.collection('perfiles');
 		col_perfiles.find({}).toArray(function(err, perfiles){
@@ -29,25 +97,7 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 		});	
 	});
 	
-	app.get('/getPostulantePorDni/:dni', function(request, response){
-		var dni = request.params.dni.toString();
-		
-		db.collection('checklists').find({"postulantes.dni": dni}).toArray(function(err, checklists){			
-			var postulante = {encontrado: (checklists.length>0)};
-			var p = _.findWhere(checklists[0].postulantes, {dni: dni});
-			postulante.dni = p.dni;
-			postulante.nombre = p.nombre;
-			postulante.apellido = p.apellido;
-			postulante.perfiles = _.map(checklists, function(chk){
-				return {
-					nombre: chk.nombrePerfil,
-					idChecklist: chk._id
-				}
-			});		
-			
-			response.send(JSON.stringify(postulante));
-		});	
-	});
+	
 	
 	app.post('/getDocumentacionChecklistPostulante', function(request, response){
 		var dni = request.body.dni.toString();
@@ -126,27 +176,6 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 		db.collection('expedientes').save({numero: numero_expediente}, function(){
 			if(err) throw err;
 			response.send("ok");
-		});
-	});
-	
-	app.post('/guardarFojasParaUnPostulanteAUnPerfil', function(request, response){
-		var id_checklist = request.body.idChecklist;
-		var dni_postulante = request.body.dniPostulante;
-		var documentacion_requerida = request.body.documentacion;
-		
-		db.collection('checklists').findOne({_id: new ObjectId(id_checklist)}, function(err, checklist){		
-			var postulante_a_perfil = _.findWhere(checklist.postulantes, {dni: dni_postulante});
-			postulante_a_perfil.documentacionPresentada = _.map(documentacion_requerida, function(docu){
-				return {
-					descripcion: docu.descripcion,
-					cantidadFojas: docu.cantidadFojas
-				};
-			});
-			
-			db.collection('checklists').save(checklist, function(err){
-				if(err) throw err;
-				response.send("ok");	
-			});
 		});
 	});
 });

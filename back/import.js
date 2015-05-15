@@ -78,7 +78,7 @@ mongodb.MongoClient.connect(uri, function(err, db) {
 					.on("data", function(data){     
 						var checklist = _.findWhere(checklists, {codigo: data.Checklist});
 						checklist.documentacionRequerida.push({
-							documento: data.Documento,
+							codigo: data.Documento,
 							orden: data.Orden
 						});	
 					})
