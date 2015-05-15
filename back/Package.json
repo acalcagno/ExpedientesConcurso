@@ -5,6 +5,7 @@
 		"express": "*",
 		"mongodb": "*",
 		"body-parser": "*",
-		"fast-csv": "*"
+		"fast-csv": "*",
+		"serve-static": "*"
 	}
 }

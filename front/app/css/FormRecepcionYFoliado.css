@@ -111,6 +111,10 @@
 	background-color: rgb(111, 237, 156);
 }
 
+.perfil.active:hover{
+	background-color: rgb(250, 249, 145);
+}
+
 .perfil .nombre_perfil,
 .documento #nombre_documento{
 	margin-left: 26px;

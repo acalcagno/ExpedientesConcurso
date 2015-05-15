@@ -3,11 +3,14 @@ var express = require('express');
 var http = require('http');
 var mongodb = require('mongodb');
 var _ = require("./underscore-min");
+var serveStatic = require('serve-static')
 
 var ObjectId = mongodb.ObjectID;
 
 var uri_mongo = 'mongodb://127.0.0.1/ExpedientesConcurso';
 var app = express();
+
+app.use(serveStatic('../front', {'index': ['RecepcionYFoliado.html']}))
 
 process.on('uncaughtException', function (err) {
   	console.log('Tiró error: ', err.toString());
