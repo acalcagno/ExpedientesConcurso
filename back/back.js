@@ -54,8 +54,7 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 			}			
 			response.send(JSON.stringify(checklist));
 		});	
-	});	
-	
+	});		
 	
 	app.get('/getDocumentoPorCodigo/:codigo', function(request, response){
 		var codigo = request.params.codigo;
@@ -76,13 +75,15 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 			if(err) throw err;
 			response.send("ok");	
 		});
-	});
+	});	
 	
-	app.get('/todosLosPerfiles', function(request, response){
-		var col_perfiles = db.collection('perfiles');
-		col_perfiles.find({}).toArray(function(err, perfiles){
-			response.send(JSON.stringify(perfiles));
-		});	
+	app.post('/crearExpediente', function(request, response){
+		var numero_expediente = request.body.numero;
+		
+		db.collection('expedientes').save({numero: numero_expediente}, function(){
+			if(err) throw err;
+			response.send("ok");
+		});
 	});
 	
 	app.get('/todosLosExpedientes', function(request, response){
@@ -92,87 +93,113 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 		});	
 	});
 	
-	
-	
-	app.post('/getDocumentacionChecklistPostulante', function(request, response){
-		var dni = request.body.dni.toString();
-		var idChecklist = request.body.idChecklist;
-		
-		db.collection('checklists').findOne({_id: new ObjectId(idChecklist)}, function(err, checklist){			
-			documentacion = _.map(checklist.documentacionRequerida, function(doc_req){
-				var p = _.findWhere(checklist.postulantes, {dni: dni});
-				var doc_pres = _.findWhere(p.documentacionPresentada , {descripcion: doc_req});
-				if(!doc_pres) doc_pres = {cantidadFojas : ""};
-				return {
-					descripcion: doc_req, 
-					cantidadFojas: doc_pres.cantidadFojas,
-					presentado: doc_pres.cantidadFojas != ""
-				};
-			});
-
-			response.send(JSON.stringify(documentacion));
-		});	
-	});
-	
-	app.get('/postulantesDelExpediente/:id', function(request, response){
-		var col_perfiles = db.collection('perfiles');
-		col_perfiles.find({}).toArray(function(err, perfiles){
-			var postulantes = [];
-			_.forEach(perfiles, function(perfil){
-				_.forEach(_.where(perfil.postulantes, {incluidoEnExpediente:request.params.id}), function(postulante){
-					postulantes.push({
-						nombre: postulante.nombre,
-						apellido: postulante.apellido,
-						dni: postulante.dni,
-						perfil: {
-							id: perfil._id,
-							nombre: perfil.nombre
-						}
+	app.get('/postulacionesDelExpediente/:numero', function(request, response){
+		var postulaciones_respuesta = [];			
+		db.collection('postulantes').find({}).toArray(function(err, postulantes){		
+			db.collection('perfiles').find({}).toArray(function(err, perfiles){
+				_.forEach(postulantes, function(postulante){
+					_.forEach(_.where(postulante.postulaciones, {incluidoEnExpediente:request.params.numero}), function(postulacion){
+						var perfil = _.findWhere(perfiles, {codigo: postulacion.codigoPerfil});
+						postulaciones_respuesta.push({
+							postulante: {
+								nombre: postulante.nombre,
+								apellido: postulante.apellido,
+								dni: postulante.dni
+							},						
+							perfil: {
+								codigo: perfil.codigo,
+								descripcion: perfil.descripcion
+							}
+						});
 					});
-				});
+				});	
+				response.send(JSON.stringify(postulaciones_respuesta));
 			});
-			response.send(JSON.stringify(postulantes));
-		});	
-	});
-	
-	app.post('/quitarPostulanteAPerfilDeExpediente', function(request, response){
-		var postulante = request.body.postulante;
-		
-		var col_perfiles = db.collection('perfiles');
-		col_perfiles.find({_id: new ObjectId(postulante.idPerfil)}).toArray(function(err, perfiles){
-			var perfil = perfiles[0];
-			_.findWhere(perfil.postulantes, {dni:postulante.dni}).incluidoEnExpediente = "";
-			col_perfiles.save(perfil, function(err){
-				if(err) throw err;
-				response.send("ok");	
-			});
-		});	
-	});
-	
-	app.post('/incluirPostulanteAPerfilEnExpediente', function(request, response){
-		var dni_postulante = request.body.dniPostulante;
-		var id_perfil = request.body.idPerfil;
-		var id_expediente= request.body.idExpediente;
-		
-		var col_perfiles = db.collection('perfiles');
-		col_perfiles.find({_id: new ObjectId(id_perfil)}).toArray(function(err, perfiles){
-			var perfil = perfiles[0];
-			_.findWhere(perfil.postulantes, {dni:dni_postulante}).incluidoEnExpediente = id_expediente;
-			col_perfiles.save(perfil, function(err){
-				if(err) throw err;
-				response.send("ok");	
-			});
-		});	
-	});
-
-	app.post('/crearExpediente', function(request, response){
-		var numero_expediente = request.body.numero;
-		
-		db.collection('expedientes').save({numero: numero_expediente}, function(){
-			if(err) throw err;
-			response.send("ok");
 		});
 	});
+	
+	app.post('/quitarPostulacionDeExpediente', function(request, response){
+		var postulacion = request.body.postulacion;
+		
+		var col_postulantes = db.collection('postulantes');
+		col_postulantes.findOne({dni: postulacion.dniPostulante}, function(err, postulante){
+			_.findWhere(postulante.postulaciones, {codigoPerfil: postulacion.codigoPerfil }).incluidoEnExpediente = "";
+			col_postulantes.save(postulante, function(err){
+				if(err) throw err;
+				response.send("ok");	
+			});
+		});	
+	});
+	
+	app.get('/todosLosPerfiles', function(request, response){
+		var col_perfiles = db.collection('perfiles');
+		col_perfiles.find({}).toArray(function(err, perfiles){
+			response.send(JSON.stringify(perfiles));
+		});	
+	});
+	
+	app.get('/postulacionesDelPerfil/:codigo', function(request, response){		
+		var postulaciones_respuesta = [];			
+		db.collection('postulantes').find({}).toArray(function(err, postulantes){		
+			db.collection('perfiles').find({}).toArray(function(err, perfiles){
+				db.collection('checklists').find({}).toArray(function(err, checklists){
+					_.forEach(postulantes, function(postulante){
+						_.forEach(_.where(postulante.postulaciones, {codigoPerfil:request.params.codigo}), function(postulacion){
+							var perfil = _.findWhere(perfiles, {codigo: postulacion.codigoPerfil});
+							var checklist = _.findWhere(checklists, {codigo: postulacion.codigoChecklist});
+							
+							var presento_toda_la_documentacion = true;
+							console.log(checklist.documentacionRequerida);
+							console.log(postulacion.documentacionPresentada);
+							_.forEach(checklist.documentacionRequerida, function(doc_requerido){
+								var doc_presentado = _.findWhere(postulacion.documentacionPresentada, {codigo: doc_requerido.codigo});
+								if(doc_presentado!==undefined) 
+									{if(doc_presentado.cantidadFojas == "") presento_toda_la_documentacion = false;
+									}
+								else 
+									{presento_toda_la_documentacion = false;}
+							});
+							
+							postulaciones_respuesta.push({
+								postulante: {
+									nombre: postulante.nombre,
+									apellido: postulante.apellido,
+									dni: postulante.dni
+								},						
+								perfil: {
+									codigo: perfil.codigo,
+									descripcion: perfil.descripcion
+								},
+								incluidoEnExpediente: postulacion.incluidoEnExpediente,
+								presentoTodaLaDocumentacion: presento_toda_la_documentacion
+							});
+						});
+					});
+					console.log(postulaciones_respuesta);
+					response.send(JSON.stringify(postulaciones_respuesta));
+				});
+			});				
+		});	
+	});
+	
+		
+	app.post('/incluirPostulacionEnExpediente', function(request, response){
+		var dni_postulante = request.body.dniPostulante;
+		var codigo_perfil = request.body.codigoPerfil;
+		var numero_expediente= request.body.numeroExpediente;
+		
+		console.log(request.body);
+		
+		var col_postulantes = db.collection('postulantes');
+		col_postulantes.findOne({dni: dni_postulante}, function(err, postulante){
+			_.findWhere(postulante.postulaciones, {codigoPerfil:codigo_perfil}).incluidoEnExpediente = numero_expediente;
+			col_postulantes.save(postulante, function(err){
+				if(err) throw err;
+				response.send("ok");	
+			});
+		});	
+	});
+		
 });
 
 
