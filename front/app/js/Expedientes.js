@@ -48,51 +48,63 @@ $(document).ready(function(){
 				$("#selector_de_perfiles").empty();
 				_.forEach(perfiles, function(perfil){
 					var option_perfil = $("<option>");
-					option_perfil.val(perfil._id);
-					option_perfil.text(perfil.nombre);
+					option_perfil.val(perfil.codigo);
+					option_perfil.text(perfil.descripcion);
 					$("#selector_de_perfiles").change(function(){
-						if($("#selector_de_perfiles").val() != perfil._id) return;
-						perfil_seleccionado = perfil._id;
+						if($("#selector_de_perfiles").val() != perfil.codigo) return;
+						perfil_seleccionado = perfil.codigo;
 						$("#contenedor_postulantes_de_un_perfil").empty();
-						_.forEach(perfil.postulantes, function(postulante){
-							var control_postulante = $("#plantillas .postulante_en_lista_de_no_incluidos").clone();
-							control_postulante.find(".nombre").text(postulante.apellido + ", " + postulante.nombre + " (" + postulante.dni +")");	
-							
-							if(postulante.incluidoEnExpediente){
-								control_postulante.find(".leyenda_ya_incluido").text("Postulante ya incluido en expediente N°" + _.findWhere(expedientes, {_id: postulante.incluidoEnExpediente}).numero);
-								control_postulante.addClass("incluido_en_expediente");	
-							} 
-							if(postulante_no_presento_documentacion(perfil, postulante)){
-								control_postulante.find(".leyenda_ya_incluido").text("No presentó toda la documentación requerida");
-								control_postulante.addClass("incluido_en_expediente");	
-							} 
-							$("#contenedor_postulantes_de_un_perfil").append(control_postulante);
-							control_postulante.find(".boton_incluir_postulante").click(function(){
-							$.ajax({
-								url: url + "incluirPostulanteAPerfilEnExpediente",
-								type: "POST",
-								data: {
-									dniPostulante: postulante.dni,
-									idPerfil: perfil._id,
-									idExpediente: expediente_seleccionado._id									
-								},
-								async: true,
-								success: function () {
-									postulante.incluidoEnExpediente = expediente_seleccionado._id,
-									control_postulante.find(".leyenda_ya_incluido").text("Postulante ya incluido en expediente N°" + expediente_seleccionado.numero);
-									control_postulante.addClass("incluido_en_expediente");
-									mostrarExpediente();
-								},
-								error: function (XMLHttpRequest, textStatus, errorThrown) {
-								   alertify.error("error al incluir postulante");
-								}
-							});
+						$.ajax({
+							url: url + "postulacionesDelPerfil/" + perfil_seleccionado,
+							type: "GET",
+							async: true,
+							success: function (postulaciones_json) {
+								var postulaciones = JSON.parse(postulaciones_json);	
+								_.forEach(postulaciones, function(postulacion){
+									var control_postulante = $("#plantillas .postulante_en_lista_de_no_incluidos").clone();
+									control_postulante.find(".nombre").text(postulacion.postulante.apellido + ", " + postulacion.postulante.nombre + " (" + postulacion.postulante.dni +")");	
+
+									if(postulacion.incluidoEnExpediente){
+										control_postulante.find(".leyenda_ya_incluido").text("Postulante ya incluido en expediente N°" + postulacion.incluidoEnExpediente);
+										control_postulante.addClass("incluido_en_expediente");	
+									} 
+									if(!postulacion.presentoTodaLaDocumentacion){
+										control_postulante.find(".leyenda_ya_incluido").text("No presentó toda la documentación requerida");
+										control_postulante.addClass("incluido_en_expediente");	
+									} 
+									$("#contenedor_postulantes_de_un_perfil").append(control_postulante);
+									control_postulante.find(".boton_incluir_postulante").click(function(){
+										$.ajax({
+											url: url + "incluirPostulacionEnExpediente",
+											type: "POST",
+											data: {
+												dniPostulante: postulacion.postulante.dni,
+												codigoPerfil: postulacion.perfil.codigo,
+												numeroExpediente: expediente_seleccionado.numero									
+											},
+											async: true,
+											success: function () {
+												postulacion.incluidoEnExpediente = expediente_seleccionado.numero,
+												control_postulante.find(".leyenda_ya_incluido").text("Postulante ya incluido en expediente N°" + expediente_seleccionado.numero);
+												control_postulante.addClass("incluido_en_expediente");
+												mostrarExpediente();
+											},
+											error: function (XMLHttpRequest, textStatus, errorThrown) {
+											   alertify.error("error al incluir postulante");
+											}
+										});
+									});
+								});
+							},
+							error: function (XMLHttpRequest, textStatus, errorThrown) {
+							   alertify.error("error al obtener postulaciones del perfil");
+							}
 						});
-						});
+						
 					});
 					$("#selector_de_perfiles").append(option_perfil);
 				});
-				if(!perfil_seleccionado) perfil_seleccionado = perfiles[0]._id;
+				if(!perfil_seleccionado) perfil_seleccionado = perfiles[0].codigo;
 				$("#selector_de_perfiles").val(perfil_seleccionado);
 				$("#selector_de_perfiles").change();
 			},
@@ -100,16 +112,6 @@ $(document).ready(function(){
 			   alerify.error("error al obtener expedientes");
 			}
 		});
-	};
-	
-	var postulante_no_presento_documentacion = function(perfil, postulante){
-		var no_presento = false;
-		_.forEach(perfil.documentacionRequerida, function(doc_requerido){
-			var doc_presentado = _.findWhere(postulante.documentosPresentados, {documento:doc_requerido});
-			if(!doc_presentado)	{no_presento = true; return;}
-			if(doc_presentado.cantidadFojas == "") no_presento = true;
-		});
-		return no_presento;
 	};
 	
 	var cargar_expedientes = function(){
@@ -147,33 +149,33 @@ $(document).ready(function(){
 		$("#contenedor_postulantes").empty();
 		$("#panel_expediente").show();
 		$.ajax({
-			url: url + "postulantesDelExpediente/" + expediente_seleccionado._id,
+			url: url + "postulacionesDelExpediente/" + expediente_seleccionado.numero,
 			type: "GET",
 			async: true,
-			success: function (postulantes_json) {
-				var postulantes = JSON.parse(postulantes_json);	
+			success: function (postulaciones_json) {
+				var postulaciones = JSON.parse(postulaciones_json);	
 				
-				var perfiles_distintos = _.uniq(_.pluck(postulantes, "perfil"), function(perfil){
-					return perfil.id;
+				var perfiles_distintos = _.uniq(_.pluck(postulaciones, "perfil"), function(perfil){
+					return perfil.codigo;
 				});
 				console.log(perfiles_distintos);
 				
 				_.forEach(perfiles_distintos, function(perfil){
 					var control_perfil = $("#plantillas .postulantes_de_un_perfil").clone();
-					control_perfil.find(".nombre_perfil").text(perfil.nombre);
+					control_perfil.find(".nombre_perfil").text(perfil.descripcion);
 					$("#contenedor_postulantes").append(control_perfil);
 					control_perfil.show('fast');
-					_.forEach(_.filter(postulantes, function(p){return p.perfil.id == perfil.id}), function(postulante){
+					_.forEach(_.filter(postulaciones, function(p){return p.perfil.codigo == perfil.codigo}), function(postulacion){
 						var control_postulante = $("#plantillas .postulante_en_lista_de_incluidos").clone();
-						control_postulante.find(".nombre").text(postulante.apellido + ", " + postulante.nombre + " (" + postulante.dni +")");
+						control_postulante.find(".nombre").text(postulacion.postulante.apellido + ", " + postulacion.postulante.nombre + " (" + postulacion.postulante.dni +")");
 						control_postulante.find(".boton_quitar").click(function(){
 							$.ajax({
-								url: url + "quitarPostulanteAPerfilDeExpediente",
+								url: url + "quitarPostulacionDeExpediente",
 								type: "POST",
 								data: {
-									postulante: {
-										dni: postulante.dni,
-										idPerfil: postulante.perfil.id
+									postulacion: {
+										dniPostulante: postulacion.postulante.dni,
+										codigoPerfil: postulacion.perfil.codigo
 									}
 								},
 								async: true,
@@ -200,20 +202,20 @@ $(document).ready(function(){
 			   alertify.error("error al obtener expediente");
 			}
 		});
+		}
 		
-		$("#boton_abrir_panel_agregar_postulantes").click(function(){
-			$("#panel_agregar_postulantes").show();
-			$("#panel_expediente").addClass("modo_agregar_postulantes");
-		});
-		
-		$("#boton_cerrar_panel_agregar_postulantes").click(function(event){
-			$("#panel_agregar_postulantes").hide("fast");
-			$("#panel_expediente").removeClass("modo_agregar_postulantes");
-			event.stopPropagation();
-		});
-		
-		cargar_expedientes();
-		cargar_panel_agregar_postulantes();
+	$("#boton_abrir_panel_agregar_postulantes").click(function(){
+		$("#panel_agregar_postulantes").show();
+		$("#panel_expediente").addClass("modo_agregar_postulantes");
+	});
+
+	$("#boton_cerrar_panel_agregar_postulantes").click(function(event){
+		$("#panel_agregar_postulantes").hide("fast");
+		$("#panel_expediente").removeClass("modo_agregar_postulantes");
+		event.stopPropagation();
+	});
+
+	cargar_expedientes();
+	cargar_panel_agregar_postulantes();
 	
-	}
 });
