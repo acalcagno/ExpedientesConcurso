@@ -1,5 +1,6 @@
 $(document).ready(function(){
-	var url = "http://127.0.0.1:3000/";
+	//var url = "http://127.0.0.1:3000/";
+    var url = "http://192.168.0.31:3000/";
 	
 	$("#btn_buscar").click(function(){
 		$("#panel_perfil").hide();
