@@ -1,5 +1,6 @@
 $(document).ready(function(){
-	var url = "http://127.0.0.1:3000/";
+	//var url = "http://127.0.0.1:3000/";
+	var url = "http://localhost:3000/";
 	
 	$("#btn_buscar").click(function(){
 		$("#panel_perfil").hide();
@@ -28,9 +29,11 @@ $(document).ready(function(){
 									getDocumentoPorCodigo(documento_requerido.codigo, function(documento){														
 										var documento_presentado = _.findWhere(postulacion.documentacionPresentada, {codigo: documento.codigo});
 										control_documento.find("#nombre_documento").text(documento.descripcion);
+										
 										if(documento_presentado) {
 											control_documento.find("#cantidad_fojas").val(documento_presentado.cantidadFojas);
 											if(documento_presentado.cantidadFojas>0) control_documento.addClass("presentado");
+											if(documento_presentado.salioDeSobre == "true" || documento_presentado.salioDeSobre == true) control_documento.find("#salioDeSobre")[0].checked = true;//FC
 										}
 										control_documento.find("#cantidad_fojas").change(function(){
 											if(!documento_presentado) {
@@ -49,6 +52,26 @@ $(document).ready(function(){
 												control_documento.find("#cantidad_fojas").val("");
 											}
 										});
+										//FC
+										control_documento.find("#salioDeSobre").change(function(){
+											if(documento_presentado) {
+												documento_presentado.salioDeSobre = control_documento.find("#salioDeSobre")[0].checked;
+												/*documento_presentado = {
+													codigo: documento.codigo
+												};
+												postulacion.documentacionPresentada.push(documento_presentado);*/
+											}
+											//documento_presentado.salioDeSobre = control_documento.find("#salioDeSobre")[0].checked;
+											//if(documento_presentado.cantidadFojas>0) {
+											//	control_documento.addClass("presentado");
+											//};
+											//if(documento_presentado.cantidadFojas==0||isNaN(documento_presentado.cantidadFojas)) {
+											//	control_documento.removeClass("presentado");	
+											//	documento_presentado.cantidadFojas = "";
+											//	control_documento.find("#cantidad_fojas").val("");
+											//}
+										});
+										
 										$("#contenedor_documentos").append(control_documento);
 									});			
 								});		

@@ -100,6 +100,7 @@
 
 .documento{
 	height: 40px;
+	width: 96%;/*fc*/
 }
 
 .perfil.active{
@@ -141,6 +142,18 @@
 	background-color: white !important;
 }
 
+
+.documento #salioDeSobre{
+  display: inline-block;
+  position: absolute;
+  right: -3%;
+  top: 0px;
+  bottom: 0px;
+  width: 18px;
+  height: 18px;
+}
+
+
 #btn_guardar {
   	position: absolute;
   	right: 5px;
@@ -151,7 +164,19 @@
   	display: inline-block;
   	position: absolute;
   	top: 25px;
-  	right: 37px;
+  	/*right: 37px;*/
+	right: 7%;
+  	font-size: 18px;
+	font-weight: bold;
+	color: rgb(144, 127, 127);
+}
+
+#titulo_sobre {
+  	display: inline-block;
+  	position: absolute;
+  	top: 25px;
+  	/*right: 37px;*/
+	right: 1%;
   	font-size: 18px;
 	font-weight: bold;
 	color: rgb(144, 127, 127);

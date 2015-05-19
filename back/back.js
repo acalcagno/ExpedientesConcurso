@@ -78,14 +78,6 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 		});
 	});
 	
-	
-	
-	
-	
-	
-	
-	
-	
 	app.get('/todosLosPerfiles', function(request, response){
 		var col_perfiles = db.collection('perfiles');
 		col_perfiles.find({}).toArray(function(err, perfiles){
