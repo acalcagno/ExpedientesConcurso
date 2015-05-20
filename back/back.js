@@ -149,8 +149,6 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 							var checklist = _.findWhere(checklists, {codigo: postulacion.codigoChecklist});
 							
 							var presento_toda_la_documentacion = true;
-							console.log(checklist.documentacionRequerida);
-							console.log(postulacion.documentacionPresentada);
 							_.forEach(checklist.documentacionRequerida, function(doc_requerido){
 								var doc_presentado = _.findWhere(postulacion.documentacionPresentada, {codigo: doc_requerido.codigo});
 								if(doc_presentado!==undefined) 
@@ -175,7 +173,6 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 							});
 						});
 					});
-					console.log(postulaciones_respuesta);
 					response.send(JSON.stringify(postulaciones_respuesta));
 				});
 			});				
@@ -187,9 +184,7 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 		var dni_postulante = request.body.dniPostulante;
 		var codigo_perfil = request.body.codigoPerfil;
 		var numero_expediente= request.body.numeroExpediente;
-		
-		console.log(request.body);
-		
+				
 		var col_postulantes = db.collection('postulantes');
 		col_postulantes.findOne({dni: dni_postulante}, function(err, postulante){
 			_.findWhere(postulante.postulaciones, {codigoPerfil:codigo_perfil}).incluidoEnExpediente = numero_expediente;
