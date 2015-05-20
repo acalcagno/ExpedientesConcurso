@@ -1,8 +1,17 @@
 $(document).ready(function(){
 	//var url = "http://127.0.0.1:3000/";
-    var url = "http://192.168.0.31:3000/";
-	//var url = "http://localhost:3000/";
+    //var url = "http://192.168.0.31:3000/";
+	var url = "http://localhost:3000/";
 
+	 var busqueda = $("#txtBuscador");
+            //HACIENDO EL KEYDOWN EN VEZ DEL KEY UP Y CON EL PREVENT DEFAULT EL ENTER NO ACTUALIZA TODA LA PAGINA
+            busqueda.keydown(function (event) {
+                if (event.which == 13) {
+                    $("#btn_buscar").click();
+                    event.preventDefault();
+                }
+            });
+	
 	$("#btn_buscar").click(function(){
 		$("#panel_perfil").hide();
 		$("#contenedor_resultado_busqueda").hide();
@@ -24,7 +33,8 @@ $(document).ready(function(){
 
 							getChecklistPorCodigo(postulacion.codigoChecklist, function(checklist){
 								$("#contenedor_documentos").empty();
-								_.forEach(_.sortBy(checklist.documentacionRequerida, "orden"), function(documento_requerido){
+								var doc_ordenados = _.sortBy(checklist.documentacionRequerida, "orden");
+								_.forEach(doc_ordenados, function(documento_requerido){
 									var control_documento = $("#plantillas .documento").clone();
 
 									getDocumentoPorCodigo(documento_requerido.codigo, function(documento){														
@@ -35,6 +45,10 @@ $(document).ready(function(){
 											control_documento.find("#cantidad_fojas").val(documento_presentado.cantidadFojas);
 											if(documento_presentado.cantidadFojas>0) control_documento.addClass("presentado");
 											if(documento_presentado.salioDeSobre == "true" || documento_presentado.salioDeSobre == true) control_documento.find("#salioDeSobre")[0].checked = true;//FC
+											if(documento_presentado.cantidadFojas==0||isNaN(documento_presentado.cantidadFojas)) control_documento.find("#salioDeSobre")[0].disabled = true;//FC
+										} else {
+											control_documento.find("#salioDeSobre")[0].disabled = true;//FC
+											
 										}
 										control_documento.find("#cantidad_fojas").change(function(){
 											if(!documento_presentado) {
@@ -46,11 +60,13 @@ $(document).ready(function(){
 											documento_presentado.cantidadFojas = parseInt(control_documento.find("#cantidad_fojas").val());
 											if(documento_presentado.cantidadFojas>0) {
 												control_documento.addClass("presentado");
+												control_documento.find("#salioDeSobre")[0].disabled = false;//FC
 											};
 											if(documento_presentado.cantidadFojas==0||isNaN(documento_presentado.cantidadFojas)) {
 												control_documento.removeClass("presentado");	
 												documento_presentado.cantidadFojas = "";
 												control_documento.find("#cantidad_fojas").val("");
+												control_documento.find("#salioDeSobre")[0].disabled = true;//FC
 											}
 										});
 										//FC
@@ -152,7 +168,7 @@ $(document).ready(function(){
 		$.ajax({
 			url: url + "getDocumentoPorCodigo/" + codigo,
 			type: "GET",
-			async: true,
+			async: false,
 			success: function (respuestaJson) {
 				var documento = JSON.parse(respuestaJson);	
 				callback(documento);
