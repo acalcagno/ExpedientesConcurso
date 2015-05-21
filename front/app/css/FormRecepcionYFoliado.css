@@ -46,7 +46,9 @@
 	top: 60px;
 	bottom: 10px;
 	width: 250px;
-	background-color: rgb(231, 223, 223);
+	/*background-color: rgb(231, 223, 223);*/
+	border: 1px solid #e5e5e5;/*FC*/
+	background: -webkit-linear-gradient(top, #FFFFFF 0%,#EFF0F5 100%);/*FC*/
 }
 
 #panel_perfil {
@@ -55,7 +57,9 @@
 	top: 60px;
 	left: 325px;
 	bottom: 10px;
-	background-color: rgb(231, 223, 223);
+	/*background-color: rgb(231, 223, 223);*/
+	border: 1px solid #e5e5e5; /*FC*/
+	background: -webkit-linear-gradient(top, #FFFFFF 0%,#EFF0F5 100%);/*FC*/
 }
 
 #contenedor_perfiles, 
@@ -82,7 +86,8 @@
 	font-weight: bold;
 	font-size: 20px;
 	padding: 10px;
-	color: rgb(144, 127, 127);
+	color: rgb(105, 105, 105);/*FC*/
+	/*color: rgb(144, 127, 127);*/
 }
 
 .perfil,
@@ -90,12 +95,13 @@
 	height: 80px;
 	margin-bottom: 5px;
 	border-radius: 2px;
-	background-color: rgb(101, 216, 142);
+	/*background-color: rgb(101, 216, 142);*/
 	padding: 9px;
 	font-weight: bold;
 	cursor: pointer;
 	color: white;
 	position: relative;
+	background-color: #0088cc;/*FC*/
 }
 
 .documento{
@@ -104,23 +110,24 @@
 }
 
 .perfil.active{
-	background-color: rgb(242, 241, 135);
+	background-color: rgb(55, 86, 207);/* rgb(242, 241, 135);*/
 }
 
 .perfil:hover,
 .documento:hover{
-	background-color: rgb(111, 237, 156);
+	background-color: #0E7EB6;/* rgb(111, 237, 156);*/
 }
 
 .perfil.active:hover{
-	background-color: rgb(250, 249, 145);
+	background-color: #0E7EB6; /*rgb(250, 249, 145);*/
 }
 
 .perfil .nombre_perfil,
 .documento #nombre_documento{
 	margin-left: 26px;
   	margin-bottom: 5px;
-  	color: rgb(144, 127, 127);
+  	/*color: rgb(144, 127, 127);*/
+	color: white;
   	font-weight: bold;
 	cursor: pointer;
 }
@@ -165,10 +172,11 @@
   	position: absolute;
   	top: 25px;
   	/*right: 37px;*/
-	right: 7%;
+	right: 9%;
   	font-size: 18px;
 	font-weight: bold;
-	color: rgb(144, 127, 127);
+	color: rgb(105, 105, 105);
+	/*color: rgb(144, 127, 127);*/
 }
 
 #titulo_sobre {
@@ -179,7 +187,8 @@
 	right: 1%;
   	font-size: 18px;
 	font-weight: bold;
-	color: rgb(144, 127, 127);
+	color: rgb(105, 105, 105);
+	/*color: rgb(144, 127, 127);*/
 }
 
 ::-webkit-scrollbar {
