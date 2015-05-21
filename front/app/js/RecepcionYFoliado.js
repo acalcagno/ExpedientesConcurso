@@ -1,16 +1,17 @@
 $(document).ready(function(){
 	//var url = "http://127.0.0.1:3000/";
     //var url = "http://192.168.0.31:3000/";
-	var url = "http://localhost:3000/";
-
-	 var busqueda = $("#txtBuscador");
-            //HACIENDO EL KEYDOWN EN VEZ DEL KEY UP Y CON EL PREVENT DEFAULT EL ENTER NO ACTUALIZA TODA LA PAGINA
-            busqueda.keydown(function (event) {
-                if (event.which == 13) {
-                    $("#btn_buscar").click();
-                    event.preventDefault();
-                }
-            });
+	//var url = "http://localhost:3000/";
+	var url = window.location.pathname.split("/")[0];
+	
+	var busqueda = $("#txtBuscador");
+	//HACIENDO EL KEYDOWN EN VEZ DEL KEY UP Y CON EL PREVENT DEFAULT EL ENTER NO ACTUALIZA TODA LA PAGINA
+	busqueda.keydown(function (event) {
+		if (event.which == 13) {
+			$("#btn_buscar").click();
+			event.preventDefault();
+		}
+	});
 	
 	$("#btn_buscar").click(function(){
 		$("#panel_perfil").hide();

@@ -3,9 +3,10 @@ $(document).ready(function(){
 	var expedientes = [];
 	var perfil_seleccionado;
 	//var url = "http://127.0.0.1:3000/";
-    var url = "http://192.168.0.31:3000/";
-	//var url = "http://localhost:3000/";
-	
+    //var url = "http://192.168.0.31:3000/";
+	//var url = "http://localhost:3000/";	
+	var url = window.location.pathname.split("/")[0];
+
 	$("#boton_abrir_panel_agregar_expediente").click(function(){
 		$("#panel_agregar_expediente").show("fast");
 		$("#lista_expedientes").addClass("modo_agregar_expediente");
