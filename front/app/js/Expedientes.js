@@ -42,6 +42,7 @@ $(document).ready(function(){
 	});
 	
 	var cargar_panel_agregar_postulantes = function(){
+		$("#selector_de_perfiles").off();
 		$.ajax({
 			url: url + "todosLosPerfiles",
 			type: "GET",
@@ -49,10 +50,11 @@ $(document).ready(function(){
 			success: function (perfiles_json) {
 				var perfiles = JSON.parse(perfiles_json);	
 				$("#selector_de_perfiles").empty();
-				_.forEach(perfiles, function(perfil){
+				_.forEach(_.sortBy(perfiles, "descripcion"), function(perfil){
 					var option_perfil = $("<option>");
 					option_perfil.val(perfil.codigo);
 					option_perfil.text(perfil.descripcion);
+					
 					$("#selector_de_perfiles").change(function(){
 						if($("#selector_de_perfiles").val() != perfil.codigo) return;
 						perfil_seleccionado = perfil.codigo;
