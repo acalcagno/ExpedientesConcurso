@@ -93,6 +93,18 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 		});	
 	});
 	
+	app.get('/getExpedientePorId/:id', function(request, response){
+		var id = request.params.id;
+		var ObjectId = require('mongodb').ObjectID;
+		db.collection('expedientes').findOne({"_id": new ObjectId(id)}, function(err, expediente){		
+			if(expediente == null) {
+				response.send(JSON.stringify({encontrado:false}));
+				return;
+			}			
+			response.send(JSON.stringify(expediente));
+		});	
+	});
+	
 	app.get('/postulacionesDelExpediente/:numero', function(request, response){
 		var postulaciones_respuesta = [];			
 		db.collection('postulantes').find({}).toArray(function(err, postulantes){		

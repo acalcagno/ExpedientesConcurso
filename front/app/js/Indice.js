@@ -1,24 +1,15 @@
 $(document).ready(function(){
-	var expediente_seleccionado;
-	var expedientes = [];
-	var perfil_seleccionado;
+	//var expediente_seleccionado;
+	var expediente = getVarsUrl(); 
+	//var perfil_seleccionado;
 	//var url = "http://127.0.0.1:3000/";
     //var url = "http://192.168.0.31:3000/";
 	//var url = "http://localhost:3000/";	
 	var url = window.location.pathname.split("/")[0];
 
-	$("#boton_abrir_panel_agregar_expediente").click(function(){
-		$("#panel_agregar_expediente").show("fast");
-		$("#lista_expedientes").addClass("modo_agregar_expediente");
-	});
-
-	$("#boton_cerrar_panel_agregar_expediente").click(function(event){
-		$("#panel_agregar_expediente").hide();
-		$("#lista_expedientes").removeClass("modo_agregar_expediente");
-		event.stopPropagation();
-	});
 	
-	$("#boton_agregar_expediente").click(function(){
+	
+	/*$("#boton_agregar_expediente").click(function(){
 		$.ajax({
 			url: url + "crearExpediente",
 			type: "POST",
@@ -34,13 +25,53 @@ $(document).ready(function(){
 			}
 		});
 	});
-	
+	*/
+	/*
 	$("#boton_imprimir").click(function(){
-		var win = window.open(url + "IndiceExpediente.html?id=" + expediente_seleccionado._id, '_blank');
-//		var win = window.open("IndiceExpediente.html");
+//		var win = window.open(url + "imprimir/" + expediente_seleccionado._id, '_blank');
+		var win = window.open("IndiceExpediente.html");
   		win.focus();
-	});
+	});*/
 	
+	getExpedientePorId(expediente.id, function(expediente){			
+		//var exp = expediente;
+		getPostulantesPorExpediente(expediente.numero);
+		//var expediente_presentado = _.findWhere(postulacion.documentacionPresentada, {codigo: documento.codigo});
+		/*control_documento.find("#nombre_documento").text(documento.descripcion);
+		
+		if(documento_presentado) {
+			control_documento.find("#cantidad_fojas").val(documento_presentado.cantidadFojas);
+			if(documento_presentado.cantidadFojas>0) control_documento.addClass("presentado");
+			if(documento_presentado.salioDeSobre == "true" || documento_presentado.salioDeSobre == true) control_documento.find("#salioDeSobre")[0].checked = true;//FC
+			if(documento_presentado.cantidadFojas==0||isNaN(documento_presentado.cantidadFojas)) control_documento.find("#salioDeSobre")[0].disabled = true;//FC
+		} else {
+			control_documento.find("#salioDeSobre")[0].disabled = true;//FC
+			
+		}
+		control_documento.find("#cantidad_fojas").change(function(){
+			if(!documento_presentado) {
+				documento_presentado = {
+					codigo: documento.codigo
+				};
+				postulacion.documentacionPresentada.push(documento_presentado);
+			}
+			documento_presentado.cantidadFojas = parseInt(control_documento.find("#cantidad_fojas").val());
+			if(documento_presentado.cantidadFojas>0) {
+				control_documento.addClass("presentado");
+				control_documento.find("#salioDeSobre")[0].disabled = false;//FC
+			};
+			if(documento_presentado.cantidadFojas==0||isNaN(documento_presentado.cantidadFojas)) {
+				control_documento.removeClass("presentado");	
+				documento_presentado.cantidadFojas = "";
+				control_documento.find("#cantidad_fojas").val("");
+				control_documento.find("#salioDeSobre")[0].disabled = true;//FC
+			}
+		});
+
+		
+		$("#contenedor_documentos").append(control_documento);*/
+	});	
+	/*
 	var cargar_panel_agregar_postulantes = function(){
 		$("#selector_de_perfiles").off();
 		$.ajax({
@@ -209,18 +240,36 @@ $(document).ready(function(){
 		});
 		}
 		
-	$("#boton_abrir_panel_agregar_postulantes").click(function(){
-		$("#panel_agregar_postulantes").show();
-		$("#panel_expediente").addClass("modo_agregar_postulantes");
-	});
-
-	$("#boton_cerrar_panel_agregar_postulantes").click(function(event){
-		$("#panel_agregar_postulantes").hide("fast");
-		$("#panel_expediente").removeClass("modo_agregar_postulantes");
-		event.stopPropagation();
-	});
 
 	cargar_expedientes();
-	cargar_panel_agregar_postulantes();
+	cargar_panel_agregar_postulantes();*/
+	
+	function getVarsUrl() {
+		  var url = location.search.replace("?", "");
+		  var arrUrl = url.split("&");
+		  var urlObj = {};
+		  for (var i = 0; i < arrUrl.length; i++) {
+			  var x = arrUrl[i].split("=");
+			  urlObj[x[0]] = x[1]
+		  }
+	  return urlObj;
+	};
+	
+	function getExpedientePorId(id, callback) {	
+		$.ajax({
+			url: url + "getExpedientePorId/" + id,
+			type: "GET",
+			async: false,
+			success: function (respuestaJson) {
+				var expediente = JSON.parse(respuestaJson);	
+				callback(expediente);
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown) {
+			   alertify.error("error al obtener expediente");
+			}
+		});
+	};
 	
 });
+
+
