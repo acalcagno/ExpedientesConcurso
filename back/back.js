@@ -107,11 +107,24 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 	
 	app.get('/postulacionesDelExpediente/:numero', function(request, response){
 		var postulaciones_respuesta = [];			
+		var documentacion_presentada = [];
+		var postul_ant = "";
 		db.collection('postulantes').find({}).toArray(function(err, postulantes){		
 			db.collection('perfiles').find({}).toArray(function(err, perfiles){
+				db.collection('documentos').find({}).toArray(function(err, documentos){
 				_.forEach(postulantes, function(postulante){
 					_.forEach(_.where(postulante.postulaciones, {incluidoEnExpediente:request.params.numero}), function(postulacion){
 						var perfil = _.findWhere(perfiles, {codigo: postulacion.codigoPerfil});
+						if(postul_ant != postulante.ObjectId) {
+							postul_ant = postulante.ObjectId;
+							_.forEach(postulacion.documentacionPresentada, function(doc_presentada){
+								var documento = _.findWhere(documentos, {codigo: doc_presentada.codigo});						
+								documentacion_presentada.push({
+									descripcion: documento.descripcion,
+									cantidadFojas: doc_presentada.cantidadFojas
+								})
+							});
+						}
 						postulaciones_respuesta.push({
 							postulante: {
 								nombre: postulante.nombre,
@@ -121,11 +134,15 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 							perfil: {
 								codigo: perfil.codigo,
 								descripcion: perfil.descripcion
+							},
+							documentacionPresentada: {
+								documentos: documentacion_presentada
 							}
 						});
 					});
 				});	
 				response.send(JSON.stringify(postulaciones_respuesta));
+				});
 			});
 		});
 	});

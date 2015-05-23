@@ -16,7 +16,8 @@
 	top: 10px;
 	bottom: 10px;
 	width: 250px;
-	background-color: rgb(231, 223, 223);
+	background: -webkit-linear-gradient(top, #FFFFFF 0%,#EFF0F5 100%);
+	/*background-color: rgb(231, 223, 223);*/
 }
 
 #panel_expediente {
@@ -25,7 +26,8 @@
 	left: 300px;
 	top: 10px;
 	bottom: 10px;
-	background-color: rgb(231, 223, 223);
+	background: -webkit-linear-gradient(top, #FFFFFF 0%,#EFF0F5 100%);
+	/*background-color: rgb(231, 223, 223);*/
 	right: 20px;	
 	display: none;
 }
@@ -76,7 +78,8 @@
 	height: 40px;
 	margin-bottom: 5px;
 	border-radius: 2px;
-	background-color: rgb(101, 216, 142);
+	background-color: #0088cc;
+	/*background-color: rgb(101, 216, 142);*/
 	padding: 9px;
 	font-weight: bold;
 	cursor: pointer;
@@ -85,13 +88,15 @@
 }
 .expediente_en_lista.active,
 .expediente_en_lista.active:hover{
-	background-color: rgb(242, 241, 135);
+	background-color: rgb(55, 86, 207);
+	/*background-color: rgb(242, 241, 135);*/
 }
 
 .expediente_en_lista:hover,
 .postulante_en_lista_de_incluidos:hover,
 .postulante_en_lista_de_no_incluidos:hover{
-	background-color: rgb(111, 237, 156);
+	background-color: #0E7EB6;
+	/*background-color: rgb(111, 237, 156);*/
 }
 
 .postulante_en_lista_de_incluidos .boton_quitar,
@@ -182,7 +187,6 @@
 	height: 50%;
 }
 
-
 #boton_abrir_panel_agregar_postulantes,
 #boton_abrir_panel_agregar_expediente,
 #boton_imprimir{
@@ -191,7 +195,7 @@
 	bottom: 10px;
 	width: 165px;
 	height: 40px;
-	background-color: rgb(178, 205, 96);
+	/*background-color: rgb(178, 205, 96);*/
 	padding: 10px;
 	font-weight: bold;
 	color: white;
@@ -211,7 +215,7 @@
 #boton_abrir_panel_agregar_postulantes:hover,
 #boton_abrir_panel_agregar_expediente:hover,
 #boton_imprimir:hover{
-	background-color: rgb(215, 200, 99);
+	/*background-color: rgb(215, 200, 99);*/
 }
 
 .modo_agregar_postulantes #boton_abrir_panel_agregar_postulantes{
@@ -219,14 +223,14 @@
 	width: 102%;
 	bottom: auto;
 	top: 50%;
-	background-color: rgb(200, 200, 200);
+	/*background-color: rgb(200, 200, 200);*/
 }
 
 .modo_agregar_expediente #boton_abrir_panel_agregar_expediente{
 	right: -10px;
 	width: 108%;
 	bottom: 100px;
-	background-color: rgb(200, 200, 200);
+	/*background-color: rgb(200, 200, 200);*/
 }
 
 #boton_cerrar_panel_agregar_postulantes,
@@ -243,7 +247,7 @@
 
 #boton_cerrar_panel_agregar_postulantes:hover,
 #boton_cerrar_panel_agregar_expediente:hover{	
-	background-color: gray;
+	/*background-color: gray;*/
 }
 
 .modo_agregar_postulantes #boton_cerrar_panel_agregar_postulantes,

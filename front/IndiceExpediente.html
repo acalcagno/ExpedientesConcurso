@@ -16,11 +16,59 @@
 		
 		<script src="./app/js/Indice.js"></script>
       
+	  <style>
+		.contenedor {
+			position: absolute;
+			/*nos posicionamos en el centro del navegador*/
+			left:50%;
+			width:95%;
+			margin:40px;
+			/*indicamos que el margen izquierdo, es la mitad de la anchura*/
+			margin-left:-47%;
+			/*determinamos una altura*/
+			border:1px solid #808080;
+			padding:5px;
+			background: -webkit-linear-gradient(top, #FFFFFF 0%,#EFF0F5 100%);
+			font-size:12px;
+		}
+		
+		.col1, .col2, .col3, .col4, .col5, .col6, .col7 {
+			font-weight:bold;
+			font-size:16px;
+		}
+		
+		#dni, #nombre, #documento, .col1, .col2, .col3, .col5, .col6  {
+			float:left;
+		}
+		#dni, .col1, .col5 {
+			width:12%;
+		}
+		#nombre, .col2, .col6 {
+			width:25%;
+		}
+		#documento, col3,  {
+			width:45%;
+		}
+		
+		.numero_folio, .col4, .col7 {
+			float:right;
+			width:20%;	
+			text-align:center;
+		}
+		
+		.indice {
+			width:100%;
+			display: inline-block;
+		}
+	  
+	  </style>
+	  
     </head>
     <body>
-        <div align="center">
-            <h3>Indice Expediente E-92746-2015</h3>
-            <table style="width:580px">
+		<input type="button" target="_blank" value="Imprimir" id="boton_imprimir" />
+        <div class="contenedor">
+            <h3 style="text-align:center;" id="numero_expediente"></h3>
+            <!--<table style="width:580px">
                 <thead>
                     <th>Documentación fija</th>
                     <th>folio</th>
@@ -42,7 +90,7 @@
                         <td>Publicaciones</td>
                         <td>12</td>
                     </tr>
-					<tr>
+					<!--<tr>
                         <td colspan="2" style=" text-align: center; font-weight: bold;">Documentación Postulantes:</td>
                     </tr>
                     <tr>
@@ -70,7 +118,40 @@
                         <td>25</td>
                     </tr>
                 </tbody>
-            </table>
+            </table>-->
+			<h4 style="text-align:center;">Documentación Fija </h4>
+				<span class="col5">ACTA</span>
+				<span class="col6">DESCRIPCION</span>
+				<span class="col7">FOLIO</span> 
+				<br />
+				<div id="contenedor_indice_fijo"></div>
+				<div id="plantillas_fija">
+					<div class="indice">
+						<span id="acta"></span>
+						<span id="descripcion"></span>
+						<span class="numero_folio"></span> 
+						<span style="clear:both;"></span>
+						<br />
+					</div>
+				</div>	
+			<h4 style="text-align:center;">Documentación de Postulantes </h4>
+				<span class="col1">DNI</span>
+				<span class="col2">NOMBRE</span>
+				<span class="col3">DOCUMENTO</span>
+				<span class="col4">FOLIO</span> 
+				<br />
+			<div id="contenedor_indice"></div>
+			<div id="plantillas">
+				<div class="indice">
+					<span id="dni"></span>
+					<span id="nombre"></span>
+					<span id="documento"></span>
+					<span class="numero_folio"></span> 
+					<span style="clear:both;"></span>
+					<br />
+				</div>
+			</div>	
+		
         </div>
     </body>
 </html>
