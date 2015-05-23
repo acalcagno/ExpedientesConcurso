@@ -176,6 +176,7 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 						_.forEach(_.where(postulante.postulaciones, {codigoPerfil:request.params.codigo}), function(postulacion){
 							var perfil = _.findWhere(perfiles, {codigo: postulacion.codigoPerfil});
 							var checklist = _.findWhere(checklists, {codigo: postulacion.codigoChecklist});
+							if(!checklist || !perfil) return;
 							
 							var presento_toda_la_documentacion = true;
 							_.forEach(checklist.documentacionRequerida, function(doc_requerido){
