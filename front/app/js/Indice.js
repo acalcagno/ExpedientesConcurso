@@ -33,26 +33,54 @@ $(document).ready(function(){
 				var postulaciones = JSON.parse(postulaciones_json);	
 				var numDefojas = 0;//FC:viene de la documentacion fija
 
-				
 				//DOCUMENTACION FIJA
 				
-				_.forEach(postulaciones, function(postulacion){
-					_.forEach(postulacion.documentacionPresentada.documentos, function(documento){
-						var control_indice_variable = $("#plantillas .indice").clone();
-						//var control_perfil = $("#plantillas .postulantes_de_un_perfil").clone();
-						control_indice_variable.find("#dni").text(postulacion.postulante.dni);
-						control_indice_variable.find("#nombre").text(postulacion.postulante.apellido + ", " + postulacion.postulante.nombre);
-						control_indice_variable.find("#documento").text(documento.descripcion);
-						
-						numDefojas += parseInt(documento.cantidadFojas);
-						control_indice_variable.find(".numero_folio").text(numDefojas);
-						
-						
-						$("#contenedor_indice").append(control_indice_variable);
+				var perfiles_distintos = _.uniq(_.pluck(postulaciones, "perfil"), function(perfil){
+					return perfil.codigo;
+				});
+				
+				console.log(perfiles_distintos);
+				
+				_.forEach(perfiles_distintos, function(perfil){
+					var control_perfil = $("#plantillas .postulantes_de_un_perfil").clone();
+					control_perfil.find(".nombre_perfil_indice").text("Perfil: " + perfil.descripcion);
+					$("#contenedor_indice").append(control_perfil);
+					$('#contenedor_indice').append("<br />");	
 					
+					_.forEach(_.filter(postulaciones, function(p){return p.perfil.codigo == perfil.codigo}), function(postulacion){
+						//console.log(postulacion);
+						var control_identificacion = $("#plantillas .identificacion").clone();
+						control_identificacion.text(postulacion.postulante.apellido + ", " + postulacion.postulante.nombre + ' (DNI: ' + postulacion.postulante.dni + ') ');
+						
+						//control_identificacion.find("#col3").text("Documento");
+						//control_identificacion.find("#col4").text("FOLIO");
+						$('#contenedor_indice').append(control_identificacion);	
+						$('#contenedor_indice').append("<br />");	
+						$('#contenedor_indice').append($("#plantillas .col3").clone().text("Documento"));	
+						$('#contenedor_indice').append($("#plantillas .col4h").clone().text("Hasta Foja"));	
+						$('#contenedor_indice').append($("#plantillas .col4d").clone().text("Desde Foja"));	
+						
+						_.forEach(postulacion.documentacionPresentada.documentos, function(documento){
+							var control_indice_variable = $("#plantillas .indice").clone();
+							//control_indice_variable.find("#dni").text(postulacion.postulante.dni);
+							//control_indice_variable.find("#nombre").text(postulacion.postulante.apellido + ", " + postulacion.postulante.nombre);
+							control_indice_variable.find("#documento").text(documento.descripcion);
+							
+							var fojasDesde = (numDefojas + 1);
+							numDefojas += parseInt(documento.cantidadFojas);
+							var fojasHasta = numDefojas;
+							control_indice_variable.find(".numero_folioH").text(fojasHasta);
+							control_indice_variable.find(".numero_folioD").text(fojasDesde);
+							
+							$('#contenedor_indice').append(control_indice_variable);
+						
 
+						});
+						$('#contenedor_indice').append("<hr/>");					
 					});
-					$("#contenedor_indice").append("<hr/>");					
+						var hr = $("<hr/>");
+						hr.attr('style','border-top: 3px dotted #D3D3D3;')
+						$('#contenedor_indice').append(hr);	
 				});
 			},
 			error: function (XMLHttpRequest, textStatus, errorThrown) {
