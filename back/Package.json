@@ -6,6 +6,7 @@
 		"mongodb": "*",
 		"body-parser": "*",
 		"fast-csv": "*",
-		"serve-static": "*"
+		"serve-static": "*",
+		"google-spreadsheet": "*"
 	}
 }
