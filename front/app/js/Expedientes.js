@@ -151,6 +151,7 @@ $(document).ready(function(){
 	
 	var mostrarExpediente = function(){
 		$("#titulo_expediente").text("Expediente N°" + expediente_seleccionado.numero);
+		$("#cantidad_fojas").val(parseInt(expediente_seleccionado.fojasFijas));
 		$("#contenedor_postulantes").empty();
 		$("#panel_expediente").show();
 		$.ajax({
@@ -218,6 +219,25 @@ $(document).ready(function(){
 		$("#panel_agregar_postulantes").hide("fast");
 		$("#panel_expediente").removeClass("modo_agregar_postulantes");
 		event.stopPropagation();
+	});
+	
+	$("#cantidad_fojas").change(function(){
+		expediente_seleccionado.fojasFijas = $("#cantidad_fojas").val();
+		
+		$.ajax({
+			url: url + "guardarFojasFijasEnExpediente",
+			type: "POST",
+			data: {
+				expediente: expediente_seleccionado	
+			},
+			async: true,
+			success: function () {
+				alertify.success("Fojas guardadas con éxito");	
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown) {
+			   alertify.error("Error al guardar");
+			}
+		});
 	});
 
 	cargar_expedientes();

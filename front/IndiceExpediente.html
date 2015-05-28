@@ -6,7 +6,7 @@
 		<!-- Estilos -->
 		<link href="./lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 		<link href="./lib/alertify/css/alertify.min.css" rel="stylesheet">
-		<link href="./app/css/FormExpedientes.css" rel="stylesheet">
+		<link href="./app/css/FormIndice.css" rel="stylesheet">
 
 		<!-- Scripts -->
 		<script src="./lib/alertify/alertify.js"></script>
@@ -16,76 +16,11 @@
 		
 		<script src="./app/js/Indice.js"></script>
       
-	  <style>
-		.contenedor {
-			position: absolute;
-			/*nos posicionamos en el centro del navegador*/
-			left:50%;
-			width:95%;
-			margin:40px;
-			/*indicamos que el margen izquierdo, es la mitad de la anchura*/
-			margin-left:-47%;
-			/*determinamos una altura*/
-			border:1px solid #808080;
-			padding:5px;
-			background: -webkit-linear-gradient(top, #FFFFFF 0%,#EFF0F5 100%);
-			font-size:12px;
-		}
-		
-		.col1, .col2, .col3, .col4d, .col4h, .col5, .col6, .col7 {
-			font-weight:bold;
-			font-size:14px;
-		}
-		
-		#dni, #nombre, #documento, .col1, .col2, .col3, .col5, .col6  {
-			float:left;
-		}
-		#dni, .col1, .col5 {
-			width:12%;
-		}
-		#nombre, .col2, .col6 {
-			width:25%;
-		}
-		#documento, col3,  {
-			width:80%;
-		}
-		
-		.col4d, .col4h, .col7 {
-			float:right;
-			width:8%;	
-			text-align:center;
-		}
-		
-		.numero_folioD, .numero_folioH {
-			float:right;
-			width:8%;	
-			text-align:center;
-		}
-		
-		.indice {
-			width:100%;
-			display: inline-block;
-			border-bottom: 1px dotted;
-		}
-		
-		.identificacion {
-			font-size:15px;
-			font-weight:bold;
-		}
-		
-		.nombre_perfil_indice {
-			font-size:16px;
-			font-weight:bold;
-			color: rgb(0, 0, 0);
-		}
-	  
-	  </style>
-	  
     </head>
     <body>
 		<input class="btn btn-primary btn-default" type="button" target="_blank" value="Imprimir" id="boton_imprimir" />
         <div class="contenedor">
-            <h3 style="text-align:center;" id="numero_expediente"></h3>    
+            <h3 style="text-align:center;" id="numero_expediente"></h3>   
 			<br />
 			<h4 style="text-align:center;">Documentación individual para la designación de postulantes </h4>
 				<!--<span class="col1">DNI</span>
@@ -95,8 +30,9 @@
 				<br />
 			<div id="contenedor_indice"></div>
 			<div id="plantillas">
-				<div class="postulantes_de_un_perfil">
+				<div class="contenedor_perfil">
 					<div class="nombre_perfil_indice" ></div>
+					<div class="detalle_del_perfil_indice" ></div>
 				</div>
 			
 				<div class="identificacion" class="identificacion">

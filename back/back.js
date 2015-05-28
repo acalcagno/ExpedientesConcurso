@@ -86,6 +86,15 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 		});
 	});
 	
+		app.post('/guardarFojasFijasEnExpediente', function(request, response){
+		var expediente = request.body.expediente;
+		delete expediente._id;
+		db.collection('expedientes').update({numero: expediente.numero}, expediente,  function(err){
+			if(err) throw err;
+			response.send("ok");
+		});
+	});
+	
 	app.get('/todosLosExpedientes', function(request, response){
 		var col_expedientes = db.collection('expedientes');
 		col_expedientes.find({}).toArray(function(err, expedientes){
@@ -133,7 +142,11 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 							},						
 							perfil: {
 								codigo: perfil.codigo,
-								descripcion: perfil.descripcion
+								descripcion: perfil.descripcion,
+								nivel: perfil.nivel,
+								agrupamiento: perfil.agrupamiento,
+								comite: perfil.comite,
+								vacantes: perfil.vacantes
 							},
 							documentacionPresentada: {
 								documentos: documentacion_presentada
