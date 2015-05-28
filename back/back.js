@@ -89,7 +89,7 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 		});
 	});
 	
-		app.post('/guardarFojasFijasEnExpediente', function(request, response){
+	app.post('/guardarFojasFijasEnExpediente', function(request, response){
 		var expediente = request.body.expediente;
 		delete expediente._id;
 		db.collection('expedientes').update({numero: expediente.numero}, expediente,  function(err){
@@ -246,7 +246,7 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 	app.get('/exportar', function(request, response){
 		var col_postulantes = db.collection('postulantes');
 		col_postulantes.find({}).toArray(function(err, postulantes){
-			var csvStream = csv.createWriteStream({headers: true}),
+			var csvStream = csv.createWriteStream({headers: true, delimiter:';'}),
 				writableStream = fs.createWriteStream("../front/documentacion_presentada.csv");
 
 			writableStream.on("finish", function(){
@@ -260,15 +260,13 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 					_.forEach(postulacion.documentacionPresentada, function(doc){
 						csvStream.write({
 							postulacion: postulacion.codigo, 
-							documento: doc.codigo														
+							documento: doc.codigo,
+							fojas: doc.cantidadFojas
 						});
 					});	
 				});									
 			});	
-			csvStream.end();
-			
-			
-					
+			csvStream.end();	
 		});	
 	});
 	

@@ -65,7 +65,7 @@ $(document).ready(function(){
 							async: true,
 							success: function (postulaciones_json) {
 								var postulaciones = JSON.parse(postulaciones_json);	
-								_.forEach(postulaciones, function(postulacion){
+								_.forEach(_.sortBy(postulaciones, function(po){return po.postulante.apellido;}), function(postulacion){
 									var control_postulante = $("#plantillas .postulante_en_lista_de_no_incluidos").clone();
 									control_postulante.find(".nombre").text(postulacion.postulante.apellido + ", " + postulacion.postulante.nombre + " (" + postulacion.postulante.dni +")");	
 
