@@ -232,7 +232,7 @@ $(document).ready(function(){
 			},
 			async: true,
 			success: function () {
-				alertify.success("Fojas guardadas con éxito");	
+				alertify.success("Fojas fijas guardadas con éxito");	
 			},
 			error: function (XMLHttpRequest, textStatus, errorThrown) {
 			   alertify.error("Error al guardar");
