@@ -34,9 +34,7 @@ $(document).ready(function(){
 
 							getChecklistPorCodigo(postulacion.codigoChecklist, function(checklist){
 								$("#contenedor_documentos").empty();
-								var doc_ordenados = _.sortBy(_.map(checklist.documentacionRequerida, function(dr){
-                                    dr.orden = parseInt(dr.orden); 
-                                    return dr;}), "orden");
+								var doc_ordenados = _.sortBy(checklist.documentacionRequerida, function(d){return parseInt(d.orden);});
 								_.forEach(doc_ordenados, function(documento_requerido){
 									var control_documento = $("#plantillas .documento").clone();
 

@@ -31,7 +31,7 @@ $(document).ready(function(){
 			success: function (postulaciones_json) {
 				$("#numero_expediente").text("Índice de Expediente N°" + expediente_seleccionado.numero);
 				var postulaciones = JSON.parse(postulaciones_json);	
-				var numDefojas = 0;//FC:viene de la documentacion fija
+				var numDefojas =  parseInt(expediente_seleccionado.fojasFijas);
 
 				//DOCUMENTACION FIJA
 				
@@ -42,8 +42,9 @@ $(document).ready(function(){
 				console.log(perfiles_distintos);
 				
 				_.forEach(perfiles_distintos, function(perfil){
-					var control_perfil = $("#plantillas .postulantes_de_un_perfil").clone();
-					control_perfil.find(".nombre_perfil_indice").text("Perfil: " + perfil.descripcion);
+					var control_perfil = $("#plantillas .contenedor_perfil").clone();
+					control_perfil.find(".nombre_perfil_indice").text("Perfil: " + perfil.codigo + ' - ' + perfil.descripcion);
+					control_perfil.find(".detalle_del_perfil_indice").text("Nivel: " + perfil.nivel + '. Agrupamiento: ' + perfil.agrupamiento + '. Vacantes: ' + perfil.vacantes + '. Comité: ' + perfil.comite);
 					$("#contenedor_indice").append(control_perfil);
 					$('#contenedor_indice').append("<br />");	
 					
