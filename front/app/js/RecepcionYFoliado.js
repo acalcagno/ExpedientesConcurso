@@ -26,7 +26,7 @@ $(document).ready(function(){
 					var control_perfil = $("#plantillas .perfil").clone();
 					if(!postulacion.documentacionPresentada) postulacion.documentacionPresentada = [];
 					getPerfilPorCodigo(postulacion.codigoPerfil, function(perfil){
-						control_perfil.find(".nombre_perfil").text(perfil.descripcion);						
+						control_perfil.find(".nombre_perfil").text("["+perfil.codigo+"]"+perfil.descripcion);						
 						control_perfil.click(function(){
 							$("#contenedor_perfiles").find(".active").removeClass("active");
 							control_perfil.addClass("active");

@@ -9,15 +9,15 @@ $(document).ready(function(){
 	var url = window.location.pathname.split("/")[0];
 
 	
-	$("#boton_imprimir").click(function(){
+	/*$("#boton_imprimir").click(function(){
 		window.print();
-	});
+	});*/
 	
 	getExpedientePorId(expediente.id, function(exp_de_base){
 		expediente_seleccionado = exp_de_base;		
 		//postulacionesDelExpediente(exp_de_base.numero);
 		mostrarExpediente();
-		
+
 	});	
 	
 
@@ -83,6 +83,7 @@ $(document).ready(function(){
 						hr.attr('style','border-top: 3px dotted #D3D3D3;')
 						$('#contenedor_indice').append(hr);	
 				});
+                window.print();
 			},
 			error: function (XMLHttpRequest, textStatus, errorThrown) {
 			   alertify.error("error al obtener expediente");
