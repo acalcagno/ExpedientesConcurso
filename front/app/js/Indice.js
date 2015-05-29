@@ -48,7 +48,11 @@ $(document).ready(function(){
 					$("#contenedor_indice").append(control_perfil);
 					$('#contenedor_indice').append("<br />");	
 					
-					_.forEach(_.filter(postulaciones, function(p){return p.perfil.codigo == perfil.codigo}), function(postulacion){
+					_.forEach(
+						_.sortBy(
+							_.filter(postulaciones, 
+									 function(p){return p.perfil.codigo == perfil.codigo}), 
+							function(p) {return p.fechaDeInclusionEnExpediente;}),  function(postulacion){
 						//console.log(postulacion);
 						var control_identificacion = $("#plantillas .identificacion").clone();
 						control_identificacion.text(postulacion.postulante.apellido + ", " + postulacion.postulante.nombre + ' (DNI: ' + postulacion.postulante.dni + ') ');

@@ -150,7 +150,7 @@ $(document).ready(function(){
 	
 	var mostrarExpediente = function(){
 		$("#titulo_expediente").text("Expediente N°" + expediente_seleccionado.numero);
-		$("#cantidad_fojas").val(parseInt(expediente_seleccionado.fojasFijas));
+		if(parseInt(expediente_seleccionado.fojasFijas) >= 0) $("#cantidad_fojas").val(parseInt(expediente_seleccionado.fojasFijas));
 		$("#contenedor_postulantes").empty();
 		$("#panel_expediente").show();
 		$.ajax({
