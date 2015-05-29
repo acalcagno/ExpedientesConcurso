@@ -83,9 +83,8 @@ $(document).ready(function(){
 											url: url + "incluirPostulacionEnExpediente",
 											type: "POST",
 											data: {
-												dniPostulante: postulacion.postulante.dni,
-												codigoPerfil: postulacion.perfil.codigo,
-												numeroExpediente: expediente_seleccionado.numero									
+												codigo_postulacion: postulacion.codigo,							
+												numero_expediente: expediente_seleccionado.numero						
 											},
 											async: true,
 											success: function () {
@@ -171,7 +170,12 @@ $(document).ready(function(){
 					control_perfil.find(".nombre_perfil").text(perfil.descripcion);
 					$("#contenedor_postulantes").append(control_perfil);
 					control_perfil.show('fast');
-					_.forEach(_.filter(postulaciones, function(p){return p.perfil.codigo == perfil.codigo}), function(postulacion){
+					_.forEach(
+						_.sortBy(
+							_.filter(postulaciones, 
+									 function(p){return p.perfil.codigo == perfil.codigo}), 
+							function(p) {return p.fechaDeInclusionEnExpediente;}), 
+						function(postulacion){
 						var control_postulante = $("#plantillas .postulante_en_lista_de_incluidos").clone();
 						control_postulante.find(".nombre").text(postulacion.postulante.apellido + ", " + postulacion.postulante.nombre + " (" + postulacion.postulante.dni +")");
 						control_postulante.find(".boton_quitar").click(function(){
@@ -179,10 +183,7 @@ $(document).ready(function(){
 								url: url + "quitarPostulacionDeExpediente",
 								type: "POST",
 								data: {
-									postulacion: {
-										dniPostulante: postulacion.postulante.dni,
-										codigoPerfil: postulacion.perfil.codigo
-									}
+									codigo_postulacion: postulacion.codigo
 								},
 								async: true,
 								success: function () {

@@ -138,6 +138,8 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 							});
 						}
 						postulaciones_respuesta.push({
+							fechaDeInclusionEnExpediente: postulacion.fechaDeInclusionEnExpediente,
+							codigo: postulacion.codigo,
 							postulante: {
 								nombre: postulante.nombre,
 								apellido: postulante.apellido,
@@ -164,11 +166,14 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 	});
 	
 	app.post('/quitarPostulacionDeExpediente', function(request, response){
-		var postulacion = request.body.postulacion;
+		var codigo_postulacion = request.body.codigo_postulacion;
 		
 		var col_postulantes = db.collection('postulantes');
-		col_postulantes.findOne({dni: postulacion.dniPostulante}, function(err, postulante){
-			_.findWhere(postulante.postulaciones, {codigoPerfil: postulacion.codigoPerfil }).incluidoEnExpediente = "";
+		col_postulantes.findOne({ postulaciones: {$elemMatch: {codigo: codigo_postulacion}}}, function(err, postulante){
+			var postulacion = _.findWhere(postulante.postulaciones, {codigo: codigo_postulacion});
+			delete postulacion.incluidoEnExpediente;
+			delete postulacion.fechaDeInclusionEnExpediente;
+			
 			col_postulantes.save(postulante, function(err){
 				if(err) throw err;
 				response.send("ok");	
@@ -215,6 +220,7 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 									descripcion: perfil.descripcion
 								},
 								incluidoEnExpediente: postulacion.incluidoEnExpediente,
+								codigo: postulacion.codigo,
 								presentoTodaLaDocumentacion: presento_toda_la_documentacion
 							});
 						});
@@ -227,13 +233,15 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 	
 		
 	app.post('/incluirPostulacionEnExpediente', function(request, response){
-		var dni_postulante = request.body.dniPostulante;
-		var codigo_perfil = request.body.codigoPerfil;
-		var numero_expediente= request.body.numeroExpediente;
+		var codigo_postulacion = request.body.codigo_postulacion;
+		var numero_expediente = request.body.numero_expediente;
 				
 		var col_postulantes = db.collection('postulantes');
-		col_postulantes.findOne({dni: dni_postulante}, function(err, postulante){
-			_.findWhere(postulante.postulaciones, {codigoPerfil:codigo_perfil}).incluidoEnExpediente = numero_expediente;
+		col_postulantes.findOne({ postulaciones: {$elemMatch: {codigo: codigo_postulacion}}}, function(err, postulante){
+			var postulacion = _.findWhere(postulante.postulaciones, {codigo:codigo_postulacion});
+			postulacion.incluidoEnExpediente = numero_expediente;
+			postulacion.fechaDeInclusionEnExpediente = new Date();
+			
 			col_postulantes.save(postulante, function(err){
 				if(err) throw err;
 				response.send("ok");	
