@@ -127,8 +127,9 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 				_.forEach(postulantes, function(postulante){
 					_.forEach(_.where(postulante.postulaciones, {incluidoEnExpediente:request.params.numero}), function(postulacion){
 						var perfil = _.findWhere(perfiles, {codigo: postulacion.codigoPerfil});
-						if(postul_ant != postulante.ObjectId) {
-							postul_ant = postulante.ObjectId;
+						if(postul_ant != postulacion.codigo) {
+							postul_ant = postulacion.codigo;
+							documentacion_presentada = [];
 							_.forEach(postulacion.documentacionPresentada, function(doc_presentada){
 								var documento = _.findWhere(documentos, {codigo: doc_presentada.codigo});						
 								documentacion_presentada.push({
