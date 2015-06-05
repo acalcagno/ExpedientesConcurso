@@ -123,44 +123,48 @@ mongodb.MongoClient.connect(uri_mongo, function(err, db) {
 		var postul_ant = "";
 		db.collection('postulantes').find({}).toArray(function(err, postulantes){		
 			db.collection('perfiles').find({}).toArray(function(err, perfiles){
-				db.collection('documentos').find({}).toArray(function(err, documentos){
-				_.forEach(postulantes, function(postulante){
-					_.forEach(_.where(postulante.postulaciones, {incluidoEnExpediente:request.params.numero}), function(postulacion){
-						var perfil = _.findWhere(perfiles, {codigo: postulacion.codigoPerfil});
-						if(postul_ant != postulacion.codigo) {
-							postul_ant = postulacion.codigo;
-							documentacion_presentada = [];
-							_.forEach(postulacion.documentacionPresentada, function(doc_presentada){
-								var documento = _.findWhere(documentos, {codigo: doc_presentada.codigo});						
-								documentacion_presentada.push({
-									descripcion: documento.descripcion,
-									cantidadFojas: doc_presentada.cantidadFojas
-								})
+				db.collection('checklists').find({}).toArray(function(err, checklists){
+					db.collection('documentos').find({}).toArray(function(err, documentos){
+						_.forEach(postulantes, function(postulante){
+							_.forEach(_.where(postulante.postulaciones, {incluidoEnExpediente:request.params.numero}), function(postulacion){
+								var perfil = _.findWhere(perfiles, {codigo: postulacion.codigoPerfil});
+								var checklist = _.findWhere(checklists, {codigo: postulacion.codigoChecklist});
+								if(postul_ant != postulacion.codigo) {
+									postul_ant = postulacion.codigo;
+									documentacion_presentada = [];
+									_.forEach(postulacion.documentacionPresentada, function(doc_presentada){
+										var documento = _.findWhere(documentos, {codigo: doc_presentada.codigo});						
+										var doc_requerido = _.findWhere(checklist.documentacionRequerida, {codigo: doc_presentada.codigo});	
+										if(!documento || !doc_requerido) return;
+										documentacion_presentada.push({
+											descripcion: documento.descripcion,
+											cantidadFojas: doc_presentada.cantidadFojas,
+											orden: doc_requerido.orden
+										})
+									});
+								}
+								postulaciones_respuesta.push({
+									fechaDeInclusionEnExpediente: postulacion.fechaDeInclusionEnExpediente,
+									codigo: postulacion.codigo,
+									postulante: {
+										nombre: postulante.nombre,
+										apellido: postulante.apellido,
+										dni: postulante.dni
+									},						
+									perfil: {
+										codigo: perfil.codigo,
+										descripcion: perfil.descripcion,
+										nivel: perfil.nivel,
+										agrupamiento: perfil.agrupamiento,
+										comite: perfil.comite,
+										vacantes: perfil.vacantes
+									},
+									documentacionPresentada: documentacion_presentada
+								});
 							});
-						}
-						postulaciones_respuesta.push({
-							fechaDeInclusionEnExpediente: postulacion.fechaDeInclusionEnExpediente,
-							codigo: postulacion.codigo,
-							postulante: {
-								nombre: postulante.nombre,
-								apellido: postulante.apellido,
-								dni: postulante.dni
-							},						
-							perfil: {
-								codigo: perfil.codigo,
-								descripcion: perfil.descripcion,
-								nivel: perfil.nivel,
-								agrupamiento: perfil.agrupamiento,
-								comite: perfil.comite,
-								vacantes: perfil.vacantes
-							},
-							documentacionPresentada: {
-								documentos: documentacion_presentada
-							}
-						});
+						});	
+						response.send(JSON.stringify(postulaciones_respuesta));
 					});
-				});	
-				response.send(JSON.stringify(postulaciones_respuesta));
 				});
 			});
 		});

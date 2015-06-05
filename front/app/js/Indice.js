@@ -65,7 +65,7 @@ $(document).ready(function(){
 						$('#contenedor_indice').append($("#plantillas .col4h").clone().text("Hasta Foja"));	
 						$('#contenedor_indice').append($("#plantillas .col4d").clone().text("Desde Foja"));	
 						
-						_.forEach(postulacion.documentacionPresentada.documentos, function(documento){
+						_.forEach(_.sortBy(postulacion.documentacionPresentada, function(d){return parseInt(d.orden);}), function(documento){
 							var control_indice_variable = $("#plantillas .indice").clone();
 							//control_indice_variable.find("#dni").text(postulacion.postulante.dni);
 							//control_indice_variable.find("#nombre").text(postulacion.postulante.apellido + ", " + postulacion.postulante.nombre);
