@@ -126,7 +126,7 @@ $(document).ready(function(){
 			async: true,
 			success: function (expedientes_json) {
 				expedientes = JSON.parse(expedientes_json);	
-				_.forEach(expedientes, function(expediente){
+				_.forEach(_.sortBy(expedientes, "numero"), function(expediente){
 					var control_expediente = $("#plantillas .expediente_en_lista").clone();
 					control_expediente.find("#numero_expediente").text(expediente.numero);
 					control_expediente.click(function(){
